@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="splash_title">School Info</string>
+    <string name="splash_enter">Enter</string>
+</resources>
