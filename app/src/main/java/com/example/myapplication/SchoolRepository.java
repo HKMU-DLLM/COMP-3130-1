@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -122,14 +123,26 @@ public class SchoolRepository {
 
     public List<School> searchLocal(String query) {
         String q = query == null ? "" : query.trim().toLowerCase(Locale.ROOT);
+        q = q.replace("　", " "); // full-width space fix
+
         List<School> out = new ArrayList<>();
         if (q.isEmpty()) return out;
 
         synchronized (inMemory) {
             for (School s : inMemory) {
-                if (s.name != null && s.name.toLowerCase(Locale.ROOT).contains(q)) {
-                    out.add(s);
+                boolean hit = false;
+
+                if (s.name != null && s.name.toLowerCase(Locale.ROOT).contains(q)) hit = true;
+
+                if (!hit && s.chineseName != null) {
+                    hit = s.chineseName.toLowerCase(Locale.ROOT).contains(q);
                 }
+
+                if (!hit && s.address != null) {
+                    hit = s.address.toLowerCase(Locale.ROOT).contains(q);
+                }
+
+                if (hit) out.add(s);
             }
         }
         return out;
@@ -156,8 +169,12 @@ public class SchoolRepository {
             School s = new School();
 
             s.schoolId = getString(o, "SCHOOL NO.");
-            s.name = getString(o, "ENGLISH NAME");
-            if (s.name == null) s.name = getString(o, "中文名稱");
+
+            String enName = getString(o, "ENGLISH NAME");
+            String zhName = getString(o, "中文名稱");
+
+            s.name = (enName != null && !enName.trim().isEmpty()) ? enName : zhName;
+            s.chineseName = (zhName != null && !zhName.trim().isEmpty()) ? zhName : null;
 
             s.category = getString(o, "ENGLISH CATEGORY");     // optional
             if (s.category == null) s.category = getString(o, "中文類別");
