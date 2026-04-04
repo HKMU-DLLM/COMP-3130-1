@@ -142,6 +142,10 @@ public class SchoolRepository {
                     hit = s.address.toLowerCase(Locale.ROOT).contains(q);
                 }
 
+                if (!hit && s.chineseAddress != null) {
+                    hit = s.chineseAddress.toLowerCase(Locale.ROOT).contains(q);
+                }
+
                 if (hit) out.add(s);
             }
         }
@@ -172,18 +176,22 @@ public class SchoolRepository {
 
             String enName = getString(o, "ENGLISH NAME");
             String zhName = getString(o, "中文名稱");
-
             s.name = (enName != null && !enName.trim().isEmpty()) ? enName : zhName;
             s.chineseName = (zhName != null && !zhName.trim().isEmpty()) ? zhName : null;
 
-            s.category = getString(o, "ENGLISH CATEGORY");     // optional
-            if (s.category == null) s.category = getString(o, "中文類別");
+            String enCategory = getString(o, "ENGLISH CATEGORY");
+            String zhCategory = getString(o, "中文類別");
+            s.category = (enCategory != null && !enCategory.trim().isEmpty()) ? enCategory : zhCategory;
+            s.chineseCategory = (zhCategory != null && !zhCategory.trim().isEmpty()) ? zhCategory : null;
 
             s.level = getString(o, "SCHOOL LEVEL");
             if (s.level == null) s.level = getString(o, "學校類型");
 
-            s.address = getString(o, "ENGLISH ADDRESS");
-            if (s.address == null) s.address = getString(o, "中文地址");
+            String enAddress = getString(o, "ENGLISH ADDRESS");
+            String zhAddress = getString(o, "中文地址");
+            s.address = (enAddress != null && !enAddress.trim().isEmpty()) ? enAddress : zhAddress;
+            s.chineseAddress = (zhAddress != null && !zhAddress.trim().isEmpty()) ? zhAddress : null;
+
 
             s.latitude = getDoubleNullable(o, "LATITUDE");
             if (s.latitude == null) s.latitude = getDoubleNullable(o, "緯度");
