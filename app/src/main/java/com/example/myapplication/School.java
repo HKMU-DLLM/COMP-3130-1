@@ -18,6 +18,8 @@ public class School {
     public String chineseReligion;
     public Double latitude;
     public Double longitude;
+    public String district;
+        public String chineseDistrict;
 
     public String getDisplayName() {
         return (name != null && !name.trim().isEmpty()) ? name : chineseName;

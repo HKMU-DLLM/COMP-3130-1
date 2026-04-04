@@ -1,7 +1,6 @@
 package com.example.myapplication;
 
 import android.content.Context;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -23,9 +22,7 @@ import java.util.concurrent.Executors;
 
 public class SchoolRepository {
 
-    private static final String API_URL =
-            "https://www.edb.gov.hk/attachment/en/student-parents/sch-info/sch-search/sch-location-info/SCH_LOC_EDB.json";
-
+    private static final String API_URL = "https://www.edb.gov.hk/attachment/en/student-parents/sch-info/sch-search/sch-location-info/SCH_LOC_EDB.json";
     private static final String CACHE_FILENAME = "schools_cache.json";
 
     private final Context context;
@@ -54,7 +51,7 @@ public class SchoolRepository {
     }
 
     public List<School> getAll() {
-        return new ArrayList<>(inMemory); // 返回副本，避免同步問題
+        return new ArrayList<>(inMemory);
     }
 
     public void loadCacheOrFetch(LoadCallback cb) {
@@ -74,7 +71,6 @@ public class SchoolRepository {
                         return;
                     }
                 }
-                // No usable cache, fetch from API
                 fetchAndCache(cb);
             } catch (Exception e) {
                 cb.onError("Failed to load cache: " + e.getMessage());
@@ -100,14 +96,11 @@ public class SchoolRepository {
         try {
             String json = httpGet(API_URL);
             List<School> parsed = parseSchools(json);
-
             if (parsed.isEmpty()) {
                 cb.onError("API returned JSON but parsing produced 0 schools.");
                 return;
             }
-
             writeFile(new File(context.getFilesDir(), CACHE_FILENAME), json);
-
             synchronized (inMemory) {
                 inMemory.clear();
                 inMemory.addAll(parsed);
@@ -119,40 +112,34 @@ public class SchoolRepository {
         }
     }
 
-    public List<School> searchLocal(String query) {
-        String q = query == null ? "" : query.trim().toLowerCase(Locale.ROOT);
-        List<School> out = new ArrayList<>();
-        if (q.isEmpty()) return out;
-
-        synchronized (inMemory) {
-            for (School s : inMemory) {
-                if (s.name != null && s.name.toLowerCase(Locale.ROOT).contains(q)) {
-                    out.add(s);
-                }
-            }
-        }
-        return out;
-    }
-
-    public List<School> searchWithFilters(String query, String levelFilter, String categoryFilter) {
+    public List<School> searchWithFilters(String query, String levelFilter, String categoryFilter, String districtFilter) {
         String q = (query == null ? "" : query.trim().toLowerCase(Locale.ROOT));
+        q = q.replace("　", " ");
         boolean allLevels = "All Levels".equals(levelFilter);
         boolean allCategories = "All Categories".equals(categoryFilter);
+        boolean allDistricts = "All Districts".equals(districtFilter);
 
         List<School> out = new ArrayList<>();
 
         synchronized (inMemory) {
             for (School s : inMemory) {
                 boolean matchName = q.isEmpty() ||
-                        (s.name != null && s.name.toLowerCase(Locale.ROOT).contains(q));
+                        containsIgnoreCase(s.name, q) ||
+                        containsIgnoreCase(s.chineseName, q);
 
                 boolean matchLevel = allLevels ||
-                        (s.level != null && s.level.equals(levelFilter));
+                        equalsIgnoreCase(s.level, levelFilter) ||
+                        equalsIgnoreCase(s.chineseLevel, levelFilter);
 
                 boolean matchCategory = allCategories ||
-                        (s.category != null && s.category.equals(categoryFilter));
+                        equalsIgnoreCase(s.category, categoryFilter) ||
+                        equalsIgnoreCase(s.chineseCategory, categoryFilter);
 
-                if (matchName && matchLevel && matchCategory) {
+                boolean matchDistrict = allDistricts ||
+                        equalsIgnoreCase(s.district, districtFilter) ||
+                        equalsIgnoreCase(s.chineseDistrict, districtFilter);
+
+                if (matchName && matchLevel && matchCategory && matchDistrict) {
                     out.add(s);
                 }
             }
@@ -160,45 +147,60 @@ public class SchoolRepository {
         return out;
     }
 
-    // ==================== JSON Parsing ====================
+    private boolean containsIgnoreCase(String text, String keyword) {
+        if (text == null) return false;
+        return text.toLowerCase(Locale.ROOT).contains(keyword);
+    }
+
+    private boolean equalsIgnoreCase(String a, String b) {
+        if (a == null || b == null) return false;
+        return a.equals(b);
+    }
+
     private List<School> parseSchools(String json) {
         List<School> out = new ArrayList<>();
 
-        JsonElement root = JsonParser.parseString(json);
+        try {
+            JsonElement root = JsonParser.parseString(json);
+            if (!root.isJsonArray()) return out;
 
-        if (!root.isJsonArray()) return out;
+            JsonArray arr = root.getAsJsonArray();
 
-        JsonArray arr = root.getAsJsonArray();
+            for (JsonElement el : arr) {
+                if (!el.isJsonObject()) continue;
+                JsonObject o = el.getAsJsonObject();
 
-        for (JsonElement el : arr) {
-            if (!el.isJsonObject()) continue;
-            JsonObject o = el.getAsJsonObject();
+                School s = new School();
 
-            School s = new School();
+                s.schoolId = getString(o, "SCHOOL NO.");
+                s.name = getString(o, "ENGLISH NAME");
+                s.chineseName = getString(o, "中文名稱");
+                s.category = getString(o, "ENGLISH CATEGORY");
+                s.chineseCategory = getString(o, "中文類別");
+                s.level = getString(o, "SCHOOL LEVEL");
+                if (s.level == null) s.level = getString(o, "學校類型");
+                s.chineseLevel = getString(o, "學校類型");
+                s.address = getString(o, "ENGLISH ADDRESS");
+                s.chineseAddress = getString(o, "中文地址");
+                s.gender = getString(o, "GENDER");
+                s.chineseGender = getString(o, "中文性別");
+                s.phonenumber = getString(o, "PHONE NUMBER");
+                s.website = getString(o, "WEBSITE");
+                s.religion = getString(o, "RELIGION");
+                s.chineseReligion = getString(o, "中文宗教");
 
-            s.schoolId = getString(o, "SCHOOL NO.");
-            s.name = getString(o, "ENGLISH NAME");
-            if (s.name == null) s.name = getString(o, "中文名稱");
+                s.district = getString(o, "DISTRICT");
+                s.chineseDistrict = getString(o, "中文分區");
 
-            s.category = getString(o, "ENGLISH CATEGORY");
-            if (s.category == null) s.category = getString(o, "中文類別");
+                s.latitude = getDoubleNullable(o, "LATITUDE");
+                if (s.latitude == null) s.latitude = getDoubleNullable(o, "緯度");
+                s.longitude = getDoubleNullable(o, "LONGITUDE");
+                if (s.longitude == null) s.longitude = getDoubleNullable(o, "經度");
 
-            s.level = getString(o, "SCHOOL LEVEL");
-            if (s.level == null) s.level = getString(o, "學校類型");
-
-            s.address = getString(o, "ENGLISH ADDRESS");
-            if (s.address == null) s.address = getString(o, "中文地址");
-
-            s.latitude = getDoubleNullable(o, "LATITUDE");
-            if (s.latitude == null) s.latitude = getDoubleNullable(o, "緯度");
-
-            s.longitude = getDoubleNullable(o, "LONGITUDE");
-            if (s.longitude == null) s.longitude = getDoubleNullable(o, "經度");
-
-            // 解析學校官方網站
-            s.website = getString(o, "WEBSITE");
-
-            out.add(s);
+                out.add(s);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return out;
@@ -206,9 +208,10 @@ public class SchoolRepository {
 
     private String getString(JsonObject o, String key) {
         try {
-            JsonElement element = o.get(key);
-            if (element == null || element.isJsonNull()) return null;
-            return element.getAsString().trim();
+            JsonElement el = o.get(key);
+            if (el == null || el.isJsonNull()) return null;
+            String value = el.getAsString();
+            return (value != null && !value.trim().isEmpty()) ? value.trim() : null;
         } catch (Exception e) {
             return null;
         }
@@ -216,20 +219,18 @@ public class SchoolRepository {
 
     private Double getDoubleNullable(JsonObject o, String key) {
         try {
-            JsonElement element = o.get(key);
-            if (element == null || element.isJsonNull()) return null;
-            return element.getAsDouble();
+            JsonElement el = o.get(key);
+            if (el == null || el.isJsonNull()) return null;
+            return el.getAsDouble();
         } catch (Exception e) {
             try {
-                String str = o.get(key).getAsString();
-                return Double.parseDouble(str);
+                return Double.parseDouble(o.get(key).getAsString());
             } catch (Exception ignored) {
                 return null;
             }
         }
     }
 
-    // ==================== Network & File IO ====================
     private String httpGet(String urlString) throws Exception {
         HttpURLConnection conn = (HttpURLConnection) new URL(urlString).openConnection();
         conn.setRequestMethod("GET");
@@ -262,13 +263,10 @@ public class SchoolRepository {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buf = new byte[4096];
         int n;
-        while ((n = in.read(buf)) != -1) {
-            baos.write(buf, 0, n);
-        }
+        while ((n = in.read(buf)) != -1) baos.write(buf, 0, n);
         return baos.toString(StandardCharsets.UTF_8);
     }
 
-    // Utilities
     public static String toJson(School s) {
         return new Gson().toJson(s);
     }

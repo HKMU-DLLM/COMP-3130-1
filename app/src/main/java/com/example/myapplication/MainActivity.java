@@ -1,7 +1,5 @@
 package com.example.myapplication;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -15,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private Spinner spinnerLevel;
     private Spinner spinnerCategory;
+    private Spinner spinnerDistrict;
 
     private SchoolRepository repo;
 
@@ -39,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         spinnerLevel = findViewById(R.id.spinnerLevel);
         spinnerCategory = findViewById(R.id.spinnerCategory);
+        spinnerDistrict = findViewById(R.id.spinnerDistrict);
 
         repo = new SchoolRepository(this);
 
@@ -102,42 +101,48 @@ public class MainActivity extends AppCompatActivity {
     private void setupFilters() {
         List<String> levels = new ArrayList<>();
         List<String> categories = new ArrayList<>();
+        List<String> districts = new ArrayList<>();
+
         levels.add("All Levels");
         categories.add("All Categories");
+        districts.add("All Districts");
 
         for (School s : repo.getAll()) {
-            if (s.level != null && !levels.contains(s.level)) {
-                levels.add(s.level);
-            }
-            if (s.category != null && !categories.contains(s.category)) {
-                categories.add(s.category);
-            }
+            if (s.level != null && !levels.contains(s.level)) levels.add(s.level);
+            if (s.chineseLevel != null && !levels.contains(s.chineseLevel)) levels.add(s.chineseLevel);
+
+            if (s.category != null && !categories.contains(s.category)) categories.add(s.category);
+            if (s.chineseCategory != null && !categories.contains(s.chineseCategory)) categories.add(s.chineseCategory);
+
+            if (s.district != null && !districts.contains(s.district)) districts.add(s.district);
+            if (s.chineseDistrict != null && !districts.contains(s.chineseDistrict)) districts.add(s.chineseDistrict);
         }
 
-        ArrayAdapter<String> levelAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, levels);
+        ArrayAdapter<String> levelAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, levels);
         levelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerLevel.setAdapter(levelAdapter);
 
-        ArrayAdapter<String> catAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, categories);
+        ArrayAdapter<String> catAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
         catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategory.setAdapter(catAdapter);
+
+        ArrayAdapter<String> districtAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, districts);
+        districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerDistrict.setAdapter(districtAdapter);
     }
 
-        private void performSearch() {
+    private void performSearch() {
         if (!repo.isLoaded()) {
             Toast.makeText(this, "Data not loaded yet.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         String query = searchBox.getText().toString().trim();
-        String levelFilter = spinnerLevel.getSelectedItem() != null ? 
-                            spinnerLevel.getSelectedItem().toString() : "All Levels";
-        String categoryFilter = spinnerCategory.getSelectedItem() != null ? 
-                               spinnerCategory.getSelectedItem().toString() : "All Categories";
+        String levelFilter = spinnerLevel.getSelectedItem().toString();
+        String categoryFilter = spinnerCategory.getSelectedItem().toString();
+        String districtFilter = spinnerDistrict.getSelectedItem().toString();
 
-        List<School> results = repo.searchWithFilters(query, levelFilter, categoryFilter);
+        List<School> results = repo.searchWithFilters(query, levelFilter, categoryFilter, districtFilter);
 
         if (results.isEmpty()) {
             Toast.makeText(this, "No results found with current filters.", Toast.LENGTH_SHORT).show();

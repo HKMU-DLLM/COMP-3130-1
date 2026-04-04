@@ -17,7 +17,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
 
         <EditText
             android:id="@+id/searchBox"
@@ -39,29 +40,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingTop="8dp">
+        android:paddingBottom="12dp">
 
         <Spinner
             android:id="@+id/spinnerLevel"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="4dp" />
 
         <Spinner
             android:id="@+id/spinnerCategory"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp" />
+            android:layout_marginEnd="4dp"
+            android:layout_marginStart="4dp" />
+
+        <Spinner
+            android:id="@+id/spinnerDistrict"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp" />
     </LinearLayout>
 
     <!-- Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="16dp">
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/btnRefresh"
@@ -74,7 +82,9 @@
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="12dp"/>
     </LinearLayout>
 
 </LinearLayout>
