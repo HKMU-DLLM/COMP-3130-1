@@ -1,7 +1,12 @@
 package com.example.myapplication;
 
 import android.content.Context;
-import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -15,12 +20,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 public class SchoolRepository {
 
@@ -55,7 +54,7 @@ public class SchoolRepository {
     }
 
     public List<School> getAll() {
-        return inMemory;
+        return new ArrayList<>(inMemory); // 返回副本，避免同步問題
     }
 
     public void loadCacheOrFetch(LoadCallback cb) {
@@ -75,7 +74,7 @@ public class SchoolRepository {
                         return;
                     }
                 }
-                // No usable cache, fetch
+                // No usable cache, fetch from API
                 fetchAndCache(cb);
             } catch (Exception e) {
                 cb.onError("Failed to load cache: " + e.getMessage());
@@ -97,14 +96,13 @@ public class SchoolRepository {
         }));
     }
 
-
     private void fetchAndCache(LoadCallback cb) {
         try {
             String json = httpGet(API_URL);
             List<School> parsed = parseSchools(json);
 
             if (parsed.isEmpty()) {
-                cb.onError("API returned JSON but parsing produced 0 schools. Check JSON structure.");
+                cb.onError("API returned JSON but parsing produced 0 schools.");
                 return;
             }
 
@@ -123,45 +121,51 @@ public class SchoolRepository {
 
     public List<School> searchLocal(String query) {
         String q = query == null ? "" : query.trim().toLowerCase(Locale.ROOT);
-        q = q.replace("　", " "); // full-width space fix
-
         List<School> out = new ArrayList<>();
         if (q.isEmpty()) return out;
 
         synchronized (inMemory) {
             for (School s : inMemory) {
-                boolean hit = false;
-
-                if (s.name != null && s.name.toLowerCase(Locale.ROOT).contains(q)) hit = true;
-
-                if (!hit && s.chineseName != null) {
-                    hit = s.chineseName.toLowerCase(Locale.ROOT).contains(q);
+                if (s.name != null && s.name.toLowerCase(Locale.ROOT).contains(q)) {
+                    out.add(s);
                 }
-
-                if (!hit && s.address != null) {
-                    hit = s.address.toLowerCase(Locale.ROOT).contains(q);
-                }
-
-                if (!hit && s.chineseAddress != null) {
-                    hit = s.chineseAddress.toLowerCase(Locale.ROOT).contains(q);
-                }
-
-                if (hit) out.add(s);
             }
         }
         return out;
     }
 
-    // ---------- JSON parsing ----------
-    // We try to handle either:
-    // 1) top-level array
-    // 2) object containing an array in some common key
+    public List<School> searchWithFilters(String query, String levelFilter, String categoryFilter) {
+        String q = (query == null ? "" : query.trim().toLowerCase(Locale.ROOT));
+        boolean allLevels = "All Levels".equals(levelFilter);
+        boolean allCategories = "All Categories".equals(categoryFilter);
+
+        List<School> out = new ArrayList<>();
+
+        synchronized (inMemory) {
+            for (School s : inMemory) {
+                boolean matchName = q.isEmpty() ||
+                        (s.name != null && s.name.toLowerCase(Locale.ROOT).contains(q));
+
+                boolean matchLevel = allLevels ||
+                        (s.level != null && s.level.equals(levelFilter));
+
+                boolean matchCategory = allCategories ||
+                        (s.category != null && s.category.equals(categoryFilter));
+
+                if (matchName && matchLevel && matchCategory) {
+                    out.add(s);
+                }
+            }
+        }
+        return out;
+    }
+
+    // ==================== JSON Parsing ====================
     private List<School> parseSchools(String json) {
         List<School> out = new ArrayList<>();
 
         JsonElement root = JsonParser.parseString(json);
 
-        // Root is an array in your JSON
         if (!root.isJsonArray()) return out;
 
         JsonArray arr = root.getAsJsonArray();
@@ -173,25 +177,17 @@ public class SchoolRepository {
             School s = new School();
 
             s.schoolId = getString(o, "SCHOOL NO.");
+            s.name = getString(o, "ENGLISH NAME");
+            if (s.name == null) s.name = getString(o, "中文名稱");
 
-            String enName = getString(o, "ENGLISH NAME");
-            String zhName = getString(o, "中文名稱");
-            s.name = (enName != null && !enName.trim().isEmpty()) ? enName : zhName;
-            s.chineseName = (zhName != null && !zhName.trim().isEmpty()) ? zhName : null;
-
-            String enCategory = getString(o, "ENGLISH CATEGORY");
-            String zhCategory = getString(o, "中文類別");
-            s.category = (enCategory != null && !enCategory.trim().isEmpty()) ? enCategory : zhCategory;
-            s.chineseCategory = (zhCategory != null && !zhCategory.trim().isEmpty()) ? zhCategory : null;
+            s.category = getString(o, "ENGLISH CATEGORY");
+            if (s.category == null) s.category = getString(o, "中文類別");
 
             s.level = getString(o, "SCHOOL LEVEL");
             if (s.level == null) s.level = getString(o, "學校類型");
 
-            String enAddress = getString(o, "ENGLISH ADDRESS");
-            String zhAddress = getString(o, "中文地址");
-            s.address = (enAddress != null && !enAddress.trim().isEmpty()) ? enAddress : zhAddress;
-            s.chineseAddress = (zhAddress != null && !zhAddress.trim().isEmpty()) ? zhAddress : null;
-
+            s.address = getString(o, "ENGLISH ADDRESS");
+            if (s.address == null) s.address = getString(o, "中文地址");
 
             s.latitude = getDoubleNullable(o, "LATITUDE");
             if (s.latitude == null) s.latitude = getDoubleNullable(o, "緯度");
@@ -199,7 +195,9 @@ public class SchoolRepository {
             s.longitude = getDoubleNullable(o, "LONGITUDE");
             if (s.longitude == null) s.longitude = getDoubleNullable(o, "經度");
 
-            // Keep it (even if coords missing) for list/detail
+            // 解析學校官方網站
+            s.website = getString(o, "WEBSITE");
+
             out.add(s);
         }
 
@@ -207,24 +205,31 @@ public class SchoolRepository {
     }
 
     private String getString(JsonObject o, String key) {
-        try { return o.get(key).getAsString(); } catch (Exception e) { return null; }
+        try {
+            JsonElement element = o.get(key);
+            if (element == null || element.isJsonNull()) return null;
+            return element.getAsString().trim();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private Double getDoubleNullable(JsonObject o, String key) {
         try {
-            if (o.get(key).isJsonNull()) return null;
-            return o.get(key).getAsDouble();
+            JsonElement element = o.get(key);
+            if (element == null || element.isJsonNull()) return null;
+            return element.getAsDouble();
         } catch (Exception e) {
             try {
-                // maybe numeric string
-                return Double.parseDouble(o.get(key).getAsString());
+                String str = o.get(key).getAsString();
+                return Double.parseDouble(str);
             } catch (Exception ignored) {
                 return null;
             }
         }
     }
 
-    // ---------- IO ----------
+    // ==================== Network & File IO ====================
     private String httpGet(String urlString) throws Exception {
         HttpURLConnection conn = (HttpURLConnection) new URL(urlString).openConnection();
         conn.setRequestMethod("GET");
@@ -257,11 +262,13 @@ public class SchoolRepository {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buf = new byte[4096];
         int n;
-        while ((n = in.read(buf)) != -1) baos.write(buf, 0, n);
+        while ((n = in.read(buf)) != -1) {
+            baos.write(buf, 0, n);
+        }
         return baos.toString(StandardCharsets.UTF_8);
     }
 
-    // Utilities for passing selected school to Detail/Map
+    // Utilities
     public static String toJson(School s) {
         return new Gson().toJson(s);
     }

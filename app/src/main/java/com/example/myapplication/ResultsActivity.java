@@ -2,7 +2,6 @@ package com.example.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -10,6 +9,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +21,18 @@ public class ResultsActivity extends AppCompatActivity {
     private TextView titleView;
 
     public static void start(Context context, String query, List<School> results) {
+        if (results == null || results.isEmpty()) {
+            Toast.makeText(context, "No results found.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Intent i = new Intent(context, ResultsActivity.class);
 
-        String resultsJson = new com.google.gson.Gson().toJson(new ResultsWrapper(results));
-        i.putExtra("query", query);
+        String safeQuery = (query == null || query.trim().isEmpty()) ? "All Schools" : query.trim();
+
+        String resultsJson = new Gson().toJson(new ResultsWrapper(results));
+
+        i.putExtra("query", safeQuery);
         i.putExtra("resultsJson", resultsJson);
 
         context.startActivity(i);
@@ -31,7 +40,9 @@ public class ResultsActivity extends AppCompatActivity {
 
     private static class ResultsWrapper {
         List<School> results;
-        ResultsWrapper(List<School> results) { this.results = results; }
+        ResultsWrapper(List<School> results) {
+            this.results = results;
+        }
     }
 
     @Override
@@ -45,39 +56,50 @@ public class ResultsActivity extends AppCompatActivity {
         String query = getIntent().getStringExtra("query");
         String resultsJson = getIntent().getStringExtra("resultsJson");
 
-        titleView.setText("Results: " + query);
+        titleView.setText("Results for: " + (query != null ? query : "All Schools"));
 
-        ResultsWrapper wrapper = new com.google.gson.Gson().fromJson(
-                resultsJson, ResultsWrapper.class
-        );
+        // 解析結果
+        List<School> results = new ArrayList<>();
+        try {
+            ResultsWrapper wrapper = new Gson().fromJson(resultsJson, ResultsWrapper.class);
+            if (wrapper != null && wrapper.results != null) {
+                results = wrapper.results;
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Error loading results data", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
-        List<School> results = wrapper == null || wrapper.results == null
-                ? new ArrayList<>()
-                : wrapper.results;
+        if (results.isEmpty()) {
+            Toast.makeText(this, "No schools found.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
-        List<String> rows = new ArrayList<>();
+        // 建立顯示列表
+        List<String> displayList = new ArrayList<>();
         for (School s : results) {
-            String address = (s.address == null) ? "" : (" - " + s.address);
-            rows.add(s.name + address);
+            String address = (s.address != null && !s.address.isEmpty()) ? " - " + s.address : "";
+            displayList.add((s.name != null ? s.name : "Unknown School") + address);
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, rows);
+                android.R.layout.simple_list_item_1, displayList);
         listView.setAdapter(adapter);
 
+        // 點擊進入詳細頁面 - 修正 lambda 變數問題
+        final List<School> finalResults = results;   // ← 關鍵修正：改成 effectively final
+
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            School selected = results.get(position);
+            if (position < 0 || position >= finalResults.size()) return;
 
-            if (selected == null || selected.latitude == null || selected.longitude == null) {
-                Toast.makeText(this, "No coordinates to open map.", Toast.LENGTH_SHORT).show();
-                return;
-            }
+            School selected = finalResults.get(position);
+            if (selected == null) return;
 
-            Uri uri = Uri.parse("https://www.google.com/maps?q="
-                    + selected.latitude + "," + selected.longitude);
-
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            intent.setPackage("com.google.android.apps.maps");
+            String schoolJson = SchoolRepository.toJson(selected);
+            Intent intent = new Intent(this, SchoolDetailActivity.class);
+            intent.putExtra("schoolJson", schoolJson);
             startActivity(intent);
         });
     }
