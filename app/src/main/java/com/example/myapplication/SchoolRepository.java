@@ -112,9 +112,17 @@ public class SchoolRepository {
         }
     }
 
-    public List<School> searchWithFilters(String query, String levelFilter, String categoryFilter, String districtFilter) {
-        String q = (query == null ? "" : query.trim().toLowerCase(Locale.ROOT));
-        q = q.replace("　", " ");
+    public List<School> searchWithFilters(String queryName,
+                                          String queryAddress,
+                                          String levelFilter,
+                                          String categoryFilter,
+                                          String districtFilter) {
+
+        String qName = (queryName == null ? "" : queryName.trim().toLowerCase(Locale.ROOT))
+                .replace("　", " ");
+        String qAddr = (queryAddress == null ? "" : queryAddress.trim().toLowerCase(Locale.ROOT))
+                .replace("　", " ");
+
         boolean allLevels = "All Levels".equals(levelFilter);
         boolean allCategories = "All Categories".equals(categoryFilter);
         boolean allDistricts = "All Districts".equals(districtFilter);
@@ -123,23 +131,34 @@ public class SchoolRepository {
 
         synchronized (inMemory) {
             for (School s : inMemory) {
-                boolean matchName = q.isEmpty() ||
-                        containsIgnoreCase(s.name, q) ||
-                        containsIgnoreCase(s.chineseName, q);
 
-                boolean matchLevel = allLevels ||
-                        equalsIgnoreCase(s.level, levelFilter) ||
-                        equalsIgnoreCase(s.chineseLevel, levelFilter);
+                boolean matchName =
+                        qName.isEmpty() ||
+                                containsIgnoreCase(s.name, qName) ||
+                                containsIgnoreCase(s.chineseName, qName);
 
-                boolean matchCategory = allCategories ||
-                        equalsIgnoreCase(s.category, categoryFilter) ||
-                        equalsIgnoreCase(s.chineseCategory, categoryFilter);
+                // NEW: address matching (English + Chinese)
+                boolean matchAddress =
+                        qAddr.isEmpty() ||
+                                containsIgnoreCase(s.address, qAddr) ||
+                                containsIgnoreCase(s.chineseAddress, qAddr);
 
-                boolean matchDistrict = allDistricts ||
-                        equalsIgnoreCase(s.district, districtFilter) ||
-                        equalsIgnoreCase(s.chineseDistrict, districtFilter);
+                boolean matchLevel =
+                        allLevels ||
+                                equalsIgnoreCase(s.level, levelFilter) ||
+                                equalsIgnoreCase(s.chineseLevel, levelFilter);
 
-                if (matchName && matchLevel && matchCategory && matchDistrict) {
+                boolean matchCategory =
+                        allCategories ||
+                                equalsIgnoreCase(s.category, categoryFilter) ||
+                                equalsIgnoreCase(s.chineseCategory, categoryFilter);
+
+                boolean matchDistrict =
+                        allDistricts ||
+                                equalsIgnoreCase(s.district, districtFilter) ||
+                                equalsIgnoreCase(s.chineseDistrict, districtFilter);
+
+                if (matchName && matchAddress && matchLevel && matchCategory && matchDistrict) {
                     out.add(s);
                 }
             }
@@ -188,7 +207,6 @@ public class SchoolRepository {
                 s.website = getString(o, "WEBSITE");
                 s.religion = getString(o, "RELIGION");
                 s.chineseReligion = getString(o, "中文宗教");
-
                 s.district = getString(o, "DISTRICT");
                 s.chineseDistrict = getString(o, "中文分區");
 

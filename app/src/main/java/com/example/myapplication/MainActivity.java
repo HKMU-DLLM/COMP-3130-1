@@ -17,6 +17,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private EditText searchBox;
+    private EditText addresssearchBox;
     private Button btnSearch;
     private Button btnRefresh;
     private ProgressBar progressBar;
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         searchBox = findViewById(R.id.searchBox);
+        addresssearchBox = findViewById(R.id.addresssearchBox);
         btnSearch = findViewById(R.id.btnSearch);
         btnRefresh = findViewById(R.id.btnRefresh);
         progressBar = findViewById(R.id.progressBar);
@@ -137,19 +139,27 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        String query = searchBox.getText().toString().trim();
+        String queryName = searchBox.getText().toString().trim();
+        String queryAddress = addresssearchBox.getText().toString().trim();
+
         String levelFilter = spinnerLevel.getSelectedItem().toString();
         String categoryFilter = spinnerCategory.getSelectedItem().toString();
         String districtFilter = spinnerDistrict.getSelectedItem().toString();
 
-        List<School> results = repo.searchWithFilters(query, levelFilter, categoryFilter, districtFilter);
+        List<School> results = repo.searchWithFilters(queryName, queryAddress,
+                levelFilter, categoryFilter, districtFilter);
 
         if (results.isEmpty()) {
             Toast.makeText(this, "No results found with current filters.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String displayQuery = query.isEmpty() ? "All Schools" : query;
+        // For display on the results page
+        String displayQuery = "";
+        if (!queryName.isEmpty()) displayQuery = queryName;
+        else if (!queryAddress.isEmpty()) displayQuery = queryAddress;
+        else displayQuery = "All Schools";
+
         ResultsActivity.start(this, displayQuery, results);
     }
 }

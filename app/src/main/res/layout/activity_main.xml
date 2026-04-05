@@ -28,6 +28,14 @@
             android:hint="Enter school name"
             android:inputType="text" />
 
+        <EditText
+            android:id="@+id/addresssearchBox"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:hint="Enter school address"
+            android:inputType="text" />
+
         <Button
             android:id="@+id/btnSearch"
             android:layout_width="wrap_content"
