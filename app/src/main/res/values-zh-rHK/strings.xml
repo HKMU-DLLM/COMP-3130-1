@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- App Basic -->
     <string name="app_name">SchoolLoc</string>
     <string name="maintitle">找到適合孩子的學校</string>
     <string name="subtitle">香港學校資訊</string>
-
-    <!-- Search -->
     <string name="searchname">請輸入學校名稱</string>
     <string name="searchaddress">請輸入學校地址</string>
     <string name="searchbtn">搜尋</string>
-
-    <!-- Filters -->
     <string name="filters">篩選條件</string>
     <string name="filter_all_levels">所有級別</string>
     <string name="filter_all_categories">所有類別</string>
@@ -19,8 +14,6 @@
     <string name="filter_all_finances">所有資助類型</string>
     <string name="filter_all_sessions">所有辦學模式</string>
     <string name="filter_all_districts">所有地區</string>
-
-    <!-- Advanced Filter -->
     <string name="advanced_filter">進階篩選</string>
     <string name="level">級別</string>
     <string name="category">類別</string>
@@ -29,21 +22,13 @@
     <string name="religion">宗教</string>
     <string name="finance">資助類型</string>
     <string name="session">辦學模式</string>
-
-    <!-- Dialog Buttons -->
     <string name="dialog_reset">重設</string>
     <string name="dialog_continue">繼續</string>
     <string name="dialog_search_now">立即搜尋</string>
-
-    <!-- Buttons -->
     <string name="refreshbtn">重新整理資料</string>
-
-    <!-- Results -->
     <string name="resulttitle">搜尋結果：</string>
     <string name="resultall">所有學校</string>
     <string name="back_to_search">返回搜尋</string>
-
-    <!-- Details Page -->
     <string name="sessiontitle">辦學模式： </string>
     <string name="phonetitle">聯絡電話： </string>
     <string name="addresstitle">地址： </string>
@@ -51,15 +36,11 @@
     <string name="websitebtn">學校網站</string>
     <string name="back_to_results">返回結果</string>
     <string name="back_to_home">返回首頁</string>
-
-    <!-- Toast & Common -->
     <string name="data_loaded_from_cache">已從快取載入</string>
     <string name="data_loaded_from_api">已從網路載入</string>
     <string name="refresh_success">資料重新整理完成</string>
     <string name="no_results">找不到符合條件的學校</string>
     <string name="data_not_loaded">資料尚未載入，請點擊重新整理</string>
     <string name="load_failed">載入失敗：%1$s</string>
-
-    <!-- Language Switch -->
     <string name="switch_language">切換語言</string>
 </resources>

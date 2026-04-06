@@ -6,7 +6,6 @@
     android:orientation="vertical"
     android:background="#F8F9FA">
 
-    <!-- Top Bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,7 +35,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Type Info Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -67,7 +65,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Contact Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -118,7 +115,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Bottom Navigation -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

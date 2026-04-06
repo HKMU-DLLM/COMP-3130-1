@@ -37,7 +37,6 @@
 
     </LinearLayout>
 
-    <!-- 底部按鈕（已修正為正確的 string name） -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

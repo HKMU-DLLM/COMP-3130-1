@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // 載入上次儲存的語言（放在最前面）
         loadSavedLanguage();
 
         super.onCreate(savedInstanceState);
@@ -72,8 +71,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         binding.btnFilter.setOnClickListener(v -> showAdvancedFilterDialog());
-
-        // 右下角語言切換按鈕
         binding.btnLanguage.setOnClickListener(v -> switchLanguage());
     }
 
@@ -97,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("language", newLang);
         editor.apply();
 
-        recreate(); // 重新載入畫面，套用新語言
+        recreate();
     }
 
     private void loadOnStartup() {
@@ -241,8 +238,6 @@ public class MainActivity extends AppCompatActivity {
 
         for (String filter : mainFilters) {
             Button leftButton = new Button(this);
-
-            // === 這裡加上繁體中文翻譯 ===
             String displayText = filter;
             switch (filter) {
                 case "Level":    displayText = getString(R.string.level); break;

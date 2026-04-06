@@ -6,7 +6,6 @@
     android:orientation="vertical"
     android:background="#FAFAFA">
 
-    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,7 +24,6 @@
             android:textColor="#1C1C1E" />
     </LinearLayout>
 
-    <!-- Search Bars -->
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -68,7 +66,6 @@
             android:paddingStart="24dp" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Advanced Filter Button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnFilter"
         android:layout_width="match_parent"
@@ -80,7 +77,6 @@
         android:textSize="17sp"
         app:cornerRadius="16dp" />
 
-    <!-- Action Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -119,7 +115,6 @@
         android:layout_gravity="center"
         android:visibility="gone" />
 
-    <!-- 隱藏 Spinners（保留原始 search 邏輯） -->
     <LinearLayout android:visibility="gone" android:layout_width="0dp" android:layout_height="0dp">
         <Spinner android:id="@+id/spinnerLevel" android:layout_width="0dp" android:layout_height="0dp" />
         <Spinner android:id="@+id/spinnerCategory" android:layout_width="0dp" android:layout_height="0dp" />
@@ -130,7 +125,6 @@
         <Spinner android:id="@+id/spinnerDistrict" android:layout_width="0dp" android:layout_height="0dp" />
     </LinearLayout>
 
-        <!-- 右下角語言切換按鈕 -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnLanguage"
         android:layout_width="wrap_content"

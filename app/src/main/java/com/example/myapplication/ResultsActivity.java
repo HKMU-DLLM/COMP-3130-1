@@ -64,12 +64,9 @@ public class ResultsActivity extends AppCompatActivity {
             return;
         }
 
-        // 設定 RecyclerView
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         ResultsAdapter adapter = new ResultsAdapter(results, this::onSchoolClicked);
         binding.recyclerView.setAdapter(adapter);
-
-        // 返回按鈕（已加上繁體支援）
         binding.btnBack.setText(getString(R.string.back_to_search));
         binding.btnBack.setOnClickListener(v -> finish());
     }

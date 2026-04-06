@@ -55,7 +55,6 @@ public class SchoolDetailActivity extends AppCompatActivity {
         String displayadd = isChinese ? s.chineseAddress : s.address;
         addressView.setText(getString(R.string.addresstitle) + " " + (displayadd != null ? displayadd : ""));
 
-        // Map Button
         btnOpenMap.setOnClickListener(v -> {
             if (s.latitude != null && s.longitude != null) {
                 Uri uri = Uri.parse("geo:" + s.latitude + "," + s.longitude + "?q=" + s.latitude + "," + s.longitude);
@@ -67,7 +66,6 @@ public class SchoolDetailActivity extends AppCompatActivity {
             }
         });
 
-        // Website Button
         btnSchoolPage.setOnClickListener(v -> {
             if (s.website != null && !s.website.isEmpty()) {
                 Uri uri = Uri.parse(s.website);
@@ -78,7 +76,6 @@ public class SchoolDetailActivity extends AppCompatActivity {
             }
         });
 
-        // 返回按鈕（已加上繁體支援）
         btnBackToResults.setText(getString(R.string.back_to_results));
         btnBackToResults.setOnClickListener(v -> finish());
 
