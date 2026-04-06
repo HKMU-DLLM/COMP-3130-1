@@ -1,7 +1,7 @@
 <resources>
     <!-- App Basic -->
     <string name="app_name">SchoolLoc</string>
-    <string name="maintitle">Where is my child studying in?</string>
+    <string name="maintitle">Discover Hong Kong Schools</string>
     <string name="subtitle">Hong Kong School Information</string>
 
     <!-- Search -->
@@ -19,12 +19,28 @@
     <string name="filter_all_sessions">All Sessions</string>
     <string name="filter_all_districts">All Districts</string>
 
+    <!-- Advanced Filter -->
+    <string name="advanced_filter">Advanced Filter</string>
+    <string name="level">Level</string>
+    <string name="category">Category</string>
+    <string name="district">District</string>
+    <string name="gender">Gender</string>
+    <string name="religion">Religion</string>
+    <string name="finance">Finance</string>
+    <string name="session">Session</string>
+
+    <!-- Dialog Buttons -->
+    <string name="dialog_reset">Reset</string>
+    <string name="dialog_continue">Continue</string>
+    <string name="dialog_search_now">Search Now</string>
+
     <!-- Buttons -->
     <string name="refreshbtn">Refresh Data</string>
 
     <!-- Results -->
     <string name="resulttitle">Results for:</string>
     <string name="resultall">All schools</string>
+    <string name="back_to_search">Back to Search</string>
 
     <!-- Details Page -->
     <string name="sessiontitle">Session: </string>
@@ -32,6 +48,8 @@
     <string name="addresstitle">Address: </string>
     <string name="gmapbtn">Here for navigation</string>
     <string name="websitebtn">For more information</string>
+    <string name="back_to_results">Back to Results</string>
+    <string name="back_to_home">Back to Home</string>
 
     <!-- Toast & Common -->
     <string name="data_loaded_from_cache">Loaded from cache</string>
@@ -40,4 +58,7 @@
     <string name="no_results">No results found</string>
     <string name="data_not_loaded">Data not loaded yet. Please refresh.</string>
     <string name="load_failed">Load failed: %1$s</string>
+
+    <!-- Language Switch -->
+    <string name="switch_language">Switch Language</string>
 </resources>

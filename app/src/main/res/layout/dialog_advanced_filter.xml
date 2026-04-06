@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Advanced Filter"
+        android:text="@string/advanced_filter"
         android:textSize="22sp"
         android:textStyle="bold"
         android:layout_marginBottom="20dp" />
@@ -19,7 +19,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <!-- 左欄 -->
         <LinearLayout
             android:id="@+id/leftColumn"
             android:layout_width="0dp"
@@ -28,7 +27,6 @@
             android:orientation="vertical"
             android:paddingRight="12dp" />
 
-        <!-- 右欄 -->
         <LinearLayout
             android:id="@+id/rightColumn"
             android:layout_width="0dp"
@@ -39,7 +37,7 @@
 
     </LinearLayout>
 
-    <!-- 底部按鈕（已修正對齊） -->
+    <!-- 底部按鈕（已修正為正確的 string name） -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -52,7 +50,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Reset"
+            android:text="@string/dialog_reset"
             android:backgroundTint="#EEEEEE"
             android:textColor="#333333"
             android:layout_marginEnd="8dp" />
@@ -62,7 +60,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Continue"
+            android:text="@string/dialog_continue"
             android:backgroundTint="#2196F3"
             android:textColor="#FFFFFF"
             android:layout_marginEnd="8dp" />
@@ -72,7 +70,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Search Now"
+            android:text="@string/dialog_search_now"
             android:backgroundTint="#4CAF50"
             android:textColor="#FFFFFF" />
 

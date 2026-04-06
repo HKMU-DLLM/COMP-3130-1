@@ -1,5 +1,7 @@
 package com.example.myapplication;
 
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -18,6 +20,7 @@ import com.example.myapplication.databinding.ActivityMainBinding;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // 載入上次儲存的語言（放在最前面）
+        loadSavedLanguage();
+
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -50,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                         binding.progressBar.setVisibility(View.GONE);
                         binding.btnRefresh.setEnabled(true);
                         setupFilters();
-                        Toast.makeText(MainActivity.this, "Data refreshed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, getString(R.string.refresh_success), Toast.LENGTH_SHORT).show();
                     });
                 }
 
@@ -66,6 +72,32 @@ public class MainActivity extends AppCompatActivity {
         });
 
         binding.btnFilter.setOnClickListener(v -> showAdvancedFilterDialog());
+
+        // 右下角語言切換按鈕
+        binding.btnLanguage.setOnClickListener(v -> switchLanguage());
+    }
+
+    private void loadSavedLanguage() {
+        SharedPreferences prefs = getSharedPreferences("AppSettings", MODE_PRIVATE);
+        String lang = prefs.getString("language", "en");
+        Locale locale = lang.equals("zh") ? new Locale("zh", "HK") : new Locale("en");
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.setLocale(locale);
+        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
+    }
+
+    private void switchLanguage() {
+        SharedPreferences prefs = getSharedPreferences("AppSettings", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        String current = getResources().getConfiguration().getLocales().get(0).getLanguage();
+        String newLang = current.equals("zh") ? "en" : "zh";
+
+        editor.putString("language", newLang);
+        editor.apply();
+
+        recreate(); // 重新載入畫面，套用新語言
     }
 
     private void loadOnStartup() {
@@ -78,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                     binding.btnRefresh.setEnabled(true);
                     setupFilters();
                     Toast.makeText(MainActivity.this,
-                            fromCache ? "Loaded from cache" : "Loaded from API",
+                            fromCache ? getString(R.string.data_loaded_from_cache) : getString(R.string.data_loaded_from_api),
                             Toast.LENGTH_SHORT).show();
                 });
             }
@@ -191,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
         return list.isEmpty() ? "" : String.join(",", list);
     }
 
-    private void showAdvancedFilterDialog() {
+        private void showAdvancedFilterDialog() {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_advanced_filter, null);
 
         PopupWindow popupWindow = new PopupWindow(dialogView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, true);
@@ -209,7 +241,21 @@ public class MainActivity extends AppCompatActivity {
 
         for (String filter : mainFilters) {
             Button leftButton = new Button(this);
-            leftButton.setText(filter);
+
+            // === 這裡加上繁體中文翻譯 ===
+            String displayText = filter;
+            switch (filter) {
+                case "Level":    displayText = getString(R.string.level); break;
+                case "Category": displayText = getString(R.string.category); break;
+                case "District": displayText = getString(R.string.district); break;
+                case "Gender":   displayText = getString(R.string.gender); break;
+                case "Religion": displayText = getString(R.string.religion); break;
+                case "Finance":  displayText = getString(R.string.finance); break;
+                case "Session":  displayText = getString(R.string.session); break;
+            }
+
+            leftButton.setText(displayText);
+
             leftButton.setOnClickListener(v -> {
                 rightColumn.removeAllViews();
                 List<String> options = getSubOptions(filter);
@@ -243,7 +289,6 @@ public class MainActivity extends AppCompatActivity {
         btnContinue.setOnClickListener(v -> popupWindow.dismiss());
 
         btnSearchNow.setOnClickListener(v -> {
-            // Search Now 只用 Filter，強制清空 search bar
             binding.searchBox.setText("");
             binding.addresssearchBox.setText("");
             popupWindow.dismiss();
@@ -251,17 +296,30 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private List<String> getSubOptions(String mainFilter) {
+        private List<String> getSubOptions(String mainFilter) {
         List<String> options = new ArrayList<>();
+
+        boolean isChinese = getResources().getConfiguration().getLocales().get(0)
+                .getLanguage().equals("zh");
+
         for (School s : repo.getAll()) {
             String value = null;
-            if (mainFilter.equals("Level")) value = s.level;
-            else if (mainFilter.equals("Category")) value = s.category;
-            else if (mainFilter.equals("District")) value = s.district;
-            else if (mainFilter.equals("Gender")) value = s.gender;
-            else if (mainFilter.equals("Religion")) value = s.religion;
-            else if (mainFilter.equals("Finance")) value = s.finance;
-            else if (mainFilter.equals("Session")) value = s.session;
+
+            if (mainFilter.equals("Level")) {
+                value = isChinese ? s.chineseLevel : s.level;
+            } else if (mainFilter.equals("Category")) {
+                value = isChinese ? s.chineseCategory : s.category;
+            } else if (mainFilter.equals("District")) {
+                value = isChinese ? s.chineseDistrict : s.district;
+            } else if (mainFilter.equals("Gender")) {
+                value = isChinese ? s.chineseGender : s.gender;
+            } else if (mainFilter.equals("Religion")) {
+                value = isChinese ? s.chineseReligion : s.religion;
+            } else if (mainFilter.equals("Finance")) {
+                value = isChinese ? s.chineseFinance : s.finance;
+            } else if (mainFilter.equals("Session")) {
+                value = isChinese ? s.chineseSession : s.session;
+            }
 
             if (value != null && !value.isEmpty() && !options.contains(value)) {
                 options.add(value);

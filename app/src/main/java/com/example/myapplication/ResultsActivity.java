@@ -59,7 +59,7 @@ public class ResultsActivity extends AppCompatActivity {
         );
 
         if (results.isEmpty()) {
-            Toast.makeText(this, "No schools found.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.no_results), Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -69,7 +69,8 @@ public class ResultsActivity extends AppCompatActivity {
         ResultsAdapter adapter = new ResultsAdapter(results, this::onSchoolClicked);
         binding.recyclerView.setAdapter(adapter);
 
-        // 返回按鈕
+        // 返回按鈕（已加上繁體支援）
+        binding.btnBack.setText(getString(R.string.back_to_search));
         binding.btnBack.setOnClickListener(v -> finish());
     }
 

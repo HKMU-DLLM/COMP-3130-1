@@ -78,9 +78,11 @@ public class SchoolDetailActivity extends AppCompatActivity {
             }
         });
 
-        // 返回按鈕
+        // 返回按鈕（已加上繁體支援）
+        btnBackToResults.setText(getString(R.string.back_to_results));
         btnBackToResults.setOnClickListener(v -> finish());
 
+        btnBackToHome.setText(getString(R.string.back_to_home));
         btnBackToHome.setOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
