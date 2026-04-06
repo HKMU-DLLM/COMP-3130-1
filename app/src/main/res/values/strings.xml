@@ -2,6 +2,7 @@
     <!-- App Basic -->
     <string name="app_name">School Information</string>
     <string name="maintitle">Where is my child studying in?</string>
+    <string name="subtitle">Hong Kong School Information</string>
 
     <!-- Search -->
     <string name="searchname">Please input the school name</string>
