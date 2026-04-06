@@ -164,7 +164,6 @@ public class SchoolRepository {
                                 containsIgnoreCase(s.address, qAddr) ||
                                 containsIgnoreCase(s.chineseAddress, qAddr);
 
-                // === 關鍵修正：支援同類別多選（逗號分隔）===
                 boolean matchLevel = allLevels || matchesAny(s.level, s.chineseLevel, levelFilter);
                 boolean matchCategory = allCategories || matchesAny(s.category, s.chineseCategory, categoryFilter);
                 boolean matchGender = allGenders || matchesAny(s.gender, s.chineseGender, genderFilter);
@@ -182,7 +181,6 @@ public class SchoolRepository {
         return out;
     }
 
-    // 新增方法：支援逗號分隔的多選
     private boolean matchesAny(String enValue, String zhValue, String filterValue) {
         if (filterValue == null || filterValue.trim().isEmpty()) return true;
 
