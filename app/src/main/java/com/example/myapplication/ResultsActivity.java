@@ -3,14 +3,14 @@ package com.example.myapplication;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.databinding.ActivityResultsBinding;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ResultsActivity extends AppCompatActivity {
@@ -42,20 +42,21 @@ public class ResultsActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         String qName = getIntent().getStringExtra("qName");
-        String qAddr = getIntent().getStringExtra("qAddr");
-        String qLvl = getIntent().getStringExtra("qLvl");
-        String qCat = getIntent().getStringExtra("qCat");
-        String qGen = getIntent().getStringExtra("qGen");
-        String qRel = getIntent().getStringExtra("qRel");
-        String qFin = getIntent().getStringExtra("qFin");
-        String qSes = getIntent().getStringExtra("qSes");
-        String qDist = getIntent().getStringExtra("qDist");
-
         String displayQuery = (qName != null && !qName.isEmpty()) ? qName : getString(R.string.resultall);
         binding.titleView.setText(getString(R.string.resulttitle) + " " + displayQuery);
 
         SchoolRepository repo = SchoolRepository.getInstance(this);
-        List<School> results = repo.searchWithFilters(qName, qAddr, qLvl, qCat, qGen, qRel, qFin, qSes, qDist);
+        List<School> results = repo.searchWithFilters(
+                getIntent().getStringExtra("qName"),
+                getIntent().getStringExtra("qAddr"),
+                getIntent().getStringExtra("qLvl"),
+                getIntent().getStringExtra("qCat"),
+                getIntent().getStringExtra("qGen"),
+                getIntent().getStringExtra("qRel"),
+                getIntent().getStringExtra("qFin"),
+                getIntent().getStringExtra("qSes"),
+                getIntent().getStringExtra("qDist")
+        );
 
         if (results.isEmpty()) {
             Toast.makeText(this, "No schools found.", Toast.LENGTH_SHORT).show();
@@ -63,32 +64,18 @@ public class ResultsActivity extends AppCompatActivity {
             return;
         }
 
-        boolean isZh = getResources().getConfiguration().getLocales().get(0).getLanguage().equals("zh");
-        List<String> displayList = new ArrayList<>();
+        // 設定 RecyclerView
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        ResultsAdapter adapter = new ResultsAdapter(results, this::onSchoolClicked);
+        binding.recyclerView.setAdapter(adapter);
 
-        for (School s : results) {
-            String name = isZh ? s.chineseName : s.name;
-            String addr = isZh ? s.chineseAddress : s.address;
-            String suffix = (addr != null && !addr.isEmpty() && !addr.equalsIgnoreCase("N.A.")) ? " - " + addr : "";
-            displayList.add(name + suffix);
-        }
-
-        binding.listView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayList));
-
-        binding.listView.setOnItemClickListener((parent, view, position, id) -> {
-            School selected = results.get(position);
-            Intent intent = new Intent(this, SchoolDetailActivity.class);
-            intent.putExtra("schoolJson", SchoolRepository.toJson(selected));
-            startActivity(intent);
-        });
-
-        // 返回按鈕（放在下方）
+        // 返回按鈕
         binding.btnBack.setOnClickListener(v -> finish());
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        binding = null;
+    private void onSchoolClicked(School school) {
+        Intent intent = new Intent(this, SchoolDetailActivity.class);
+        intent.putExtra("schoolJson", SchoolRepository.toJson(school));
+        startActivity(intent);
     }
 }

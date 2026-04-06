@@ -39,7 +39,7 @@ public class SchoolDetailActivity extends AppCompatActivity {
                 .getLanguage().equals("zh");
 
         String displayname = isChinese ? s.chineseName : s.name;
-        nameView.setText(displayname);
+        nameView.setText(displayname != null ? displayname : "School Detail");
 
         String displayfin = isChinese ? s.chineseFinance : s.finance;
         String displaycat = isChinese ? s.chineseCategory : s.category;
@@ -48,19 +48,23 @@ public class SchoolDetailActivity extends AppCompatActivity {
         typeView.setText(type);
 
         String displayses = isChinese ? s.chineseSession : s.session;
-        sessionView.setText(getString(R.string.sessiontitle) + " " + displayses);
+        sessionView.setText(getString(R.string.sessiontitle) + " " + (displayses != null ? displayses : ""));
 
-        phoneView.setText(getString(R.string.phonetitle) + " " + s.phonenumber);
+        phoneView.setText(getString(R.string.phonetitle) + " " + (s.phonenumber != null ? s.phonenumber : "N/A"));
 
         String displayadd = isChinese ? s.chineseAddress : s.address;
-        addressView.setText(getString(R.string.addresstitle) + " " + displayadd);
+        addressView.setText(getString(R.string.addresstitle) + " " + (displayadd != null ? displayadd : ""));
 
         // Map Button
         btnOpenMap.setOnClickListener(v -> {
-            Uri uri = Uri.parse("geo:" + s.latitude + "," + s.longitude + "?q=" + s.latitude + "," + s.longitude);
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            intent.setPackage("com.google.android.apps.maps");
-            startActivity(intent);
+            if (s.latitude != null && s.longitude != null) {
+                Uri uri = Uri.parse("geo:" + s.latitude + "," + s.longitude + "?q=" + s.latitude + "," + s.longitude);
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                intent.setPackage("com.google.android.apps.maps");
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "No location available", Toast.LENGTH_SHORT).show();
+            }
         });
 
         // Website Button
@@ -70,12 +74,12 @@ public class SchoolDetailActivity extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
             } else {
-                Toast.makeText(this, "No official website available for this school", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "No official website available", Toast.LENGTH_LONG).show();
             }
         });
 
-        // 新增的兩個按鈕
-        btnBackToResults.setOnClickListener(v -> finish());  // 返回搜尋結果頁
+        // 返回按鈕
+        btnBackToResults.setOnClickListener(v -> finish());
 
         btnBackToHome.setOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity.class);
@@ -84,16 +88,13 @@ public class SchoolDetailActivity extends AppCompatActivity {
         });
     }
 
-    private String joinNonNull(String sep, String a, String b, String c) {
+    private String joinNonNull(String sep, String... strings) {
         StringBuilder sb = new StringBuilder();
-        if (a != null && !a.isEmpty()) sb.append(a);
-        if (b != null && !b.isEmpty()) {
-            if (sb.length() > 0) sb.append(sep);
-            sb.append(b);
-        }
-        if (c != null && !c.isEmpty()) {
-            if (sb.length() > 0) sb.append(sep);
-            sb.append(c);
+        for (String str : strings) {
+            if (str != null && !str.isEmpty()) {
+                if (sb.length() > 0) sb.append(sep);
+                sb.append(str);
+            }
         }
         return sb.toString();
     }

@@ -4,15 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@android:color/white">
+    android:background="#F8F9FA">
 
-    <!-- Title Area -->
+    <!-- Title Bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:background="#FFFFFF"
+        android:elevation="4dp">
 
         <TextView
             android:id="@+id/titleView"
@@ -21,41 +23,36 @@
             android:layout_weight="1"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@android:color/black" />
-
+            android:textColor="#1C1C1E" />
     </LinearLayout>
 
-    <!-- Results List -->
-    <ListView
-        android:id="@+id/listView"
+    <!-- School List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="8dp"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="1dp"
-        android:background="@android:color/white" />
+        android:padding="12dp"
+        android:clipToPadding="false" />
 
-    <!-- Bottom Bar with Back Button -->
+    <!-- Bottom Back Button -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp"
-        android:gravity="center"
-        android:background="?attr/colorSurface"
+        android:background="#FFFFFF"
         android:elevation="8dp">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnBack"
             style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Back To Search"
+            android:text="Back to Search"
             app:icon="@android:drawable/ic_menu_close_clear_cancel"
             app:iconGravity="start"
-            android:textColor="?attr/colorOnSurface"
-            android:minWidth="140dp" />
+            android:textAllCaps="false" />
 
     </LinearLayout>
 

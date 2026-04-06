@@ -4,74 +4,128 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@android:color/white"
-    android:padding="16dp">
+    android:background="#F8F9FA">
 
-    <!-- School Name -->
-    <TextView
-        android:id="@+id/nameView"
+    <!-- Top Bar -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp"/>
+        android:background="#FFFFFF"
+        android:elevation="4dp"
+        android:padding="16dp"
+        android:gravity="center_vertical">
 
-    <!-- Type / Category -->
-    <TextView
-        android:id="@+id/typeView"
+        <TextView
+            android:id="@+id/nameView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="#1C1C1E" />
+    </LinearLayout>
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:layout_marginBottom="12dp"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp">
 
-    <!-- Session -->
-    <TextView
-        android:id="@+id/sessionView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:layout_marginBottom="20dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <!-- Phone -->
-    <TextView
-        android:id="@+id/phoneView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:layout_marginBottom="12dp"/>
+            <!-- Type Info Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
 
-    <!-- Address -->
-    <TextView
-        android:id="@+id/addressView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:layout_marginBottom="32dp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-    <!-- Map and Website Buttons -->
-    <Button
-        android:id="@+id/btnOpenMap"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/gmapbtn"
-        android:layout_marginBottom="12dp"/>
+                    <TextView
+                        android:id="@+id/typeView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textColor="#666666" />
 
-    <Button
-        android:id="@+id/btnSchoolPage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/websitebtn"
-        android:backgroundTint="#2196F3"
-        android:layout_marginBottom="32dp"/>
+                    <TextView
+                        android:id="@+id/sessionView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:layout_marginTop="8dp"
+                        android:textColor="#666666" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-    <!-- Bottom Navigation Buttons -->
+            <!-- Contact Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/phoneView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textColor="#666666" />
+
+                    <TextView
+                        android:id="@+id/addressView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:layout_marginTop="12dp"
+                        android:textColor="#666666" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Action Buttons -->
+            <Button
+                android:id="@+id/btnOpenMap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/gmapbtn"
+                android:layout_marginBottom="12dp"
+                android:backgroundTint="#4285F4" />
+
+            <Button
+                android:id="@+id/btnSchoolPage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/websitebtn"
+                android:backgroundTint="#34A853"
+                android:layout_marginBottom="32dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Navigation -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="24dp"
-        android:paddingTop="16dp">
+        android:padding="16dp"
+        android:background="#FFFFFF"
+        android:elevation="8dp">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnBackToResults"
