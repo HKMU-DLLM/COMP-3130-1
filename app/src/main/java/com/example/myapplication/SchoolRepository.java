@@ -164,47 +164,37 @@ public class SchoolRepository {
                                 containsIgnoreCase(s.address, qAddr) ||
                                 containsIgnoreCase(s.chineseAddress, qAddr);
 
-                boolean matchLevel =
-                        allLevels ||
-                                equalsIgnoreCase(s.level, levelFilter) ||
-                                equalsIgnoreCase(s.chineseLevel, levelFilter);
+                // === 關鍵修正：支援同類別多選（逗號分隔）===
+                boolean matchLevel = allLevels || matchesAny(s.level, s.chineseLevel, levelFilter);
+                boolean matchCategory = allCategories || matchesAny(s.category, s.chineseCategory, categoryFilter);
+                boolean matchGender = allGenders || matchesAny(s.gender, s.chineseGender, genderFilter);
+                boolean matchReligion = allReligions || matchesAny(s.religion, s.chineseReligion, religionFilter);
+                boolean matchFinance = allFinances || matchesAny(s.finance, s.chineseFinance, financeFilter);
+                boolean matchSession = allSessions || matchesAny(s.session, s.chineseSession, sessionFilter);
+                boolean matchDistrict = allDistricts || matchesAny(s.district, s.chineseDistrict, districtFilter);
 
-                boolean matchCategory =
-                        allCategories ||
-                                equalsIgnoreCase(s.category, categoryFilter) ||
-                                equalsIgnoreCase(s.chineseCategory, categoryFilter);
-
-                boolean matchGender =
-                        allGenders ||
-                                equalsIgnoreCase(s.gender, genderFilter) ||
-                                equalsIgnoreCase(s.chineseGender, genderFilter);
-
-                boolean matchReligion =
-                        allReligions ||
-                                equalsIgnoreCase(s.religion, religionFilter) ||
-                                equalsIgnoreCase(s.chineseReligion, religionFilter);
-
-                boolean matchFinance =
-                        allFinances ||
-                                equalsIgnoreCase(s.finance, financeFilter) ||
-                                equalsIgnoreCase(s.chineseFinance, financeFilter);
-
-                boolean matchSession =
-                        allSessions ||
-                                equalsIgnoreCase(s.session, sessionFilter) ||
-                                equalsIgnoreCase(s.chineseSession, sessionFilter);
-
-                boolean matchDistrict =
-                        allDistricts ||
-                                equalsIgnoreCase(s.district, districtFilter) ||
-                                equalsIgnoreCase(s.chineseDistrict, districtFilter);
-
-                if (matchName && matchAddress && matchLevel && matchCategory && matchGender && matchReligion && matchFinance && matchSession && matchDistrict) {
+                if (matchName && matchAddress && matchLevel && matchCategory && matchGender &&
+                        matchReligion && matchFinance && matchSession && matchDistrict) {
                     out.add(s);
                 }
             }
         }
         return out;
+    }
+
+    // 新增方法：支援逗號分隔的多選
+    private boolean matchesAny(String enValue, String zhValue, String filterValue) {
+        if (filterValue == null || filterValue.trim().isEmpty()) return true;
+
+        String[] filters = filterValue.split(",");
+        for (String f : filters) {
+            String trimmed = f.trim();
+            if (trimmed.isEmpty()) continue;
+            if (equalsIgnoreCase(enValue, trimmed) || equalsIgnoreCase(zhValue, trimmed)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean containsIgnoreCase(String text, String keyword) {

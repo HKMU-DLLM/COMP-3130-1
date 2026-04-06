@@ -1,8 +1,14 @@
 package com.example.myapplication;
 
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,12 +16,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.myapplication.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     private SchoolRepository repo;
+
+    private Map<String, List<String>> selectedSubFilters = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,8 +33,6 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        setSupportActionBar(binding.toolbar);
 
         repo = SchoolRepository.getInstance(this);
 
@@ -35,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
         binding.btnRefresh.setOnClickListener(v -> {
             binding.btnRefresh.setEnabled(false);
             binding.progressBar.setVisibility(View.VISIBLE);
-
             repo.refreshFromApi(new SchoolRepository.RefreshCallback() {
                 @Override
                 public void onSuccess() {
@@ -57,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         });
+
+        binding.btnFilter.setOnClickListener(v -> showAdvancedFilterDialog());
     }
 
     private void loadOnStartup() {
@@ -124,27 +133,13 @@ public class MainActivity extends AppCompatActivity {
             }
             String currentDist = isChinese ? s.chineseDistrict : s.district;
 
-            if (currentLevel != null && !levels.contains(currentLevel)) {
-                levels.add(currentLevel);
-            }
-            if (currentCat != null && !categories.contains(currentCat)) {
-                categories.add(currentCat);
-            }
-            if (currentGen != null && !genders.contains(currentGen)) {
-                genders.add(currentGen);
-            }
-            if (currentRel != null && !religions.contains(currentRel)) {
-                religions.add(currentRel);
-            }
-            if (currentFin != null && !finances.contains(currentFin)) {
-                finances.add(currentFin);
-            }
-            if (currentSes != null && !sessions.contains(currentSes)) {
-                sessions.add(currentSes);
-            }
-            if (currentDist != null && !districts.contains(currentDist)) {
-                districts.add(currentDist);
-            }
+            if (currentLevel != null && !levels.contains(currentLevel)) levels.add(currentLevel);
+            if (currentCat != null && !categories.contains(currentCat)) categories.add(currentCat);
+            if (currentGen != null && !genders.contains(currentGen)) genders.add(currentGen);
+            if (currentRel != null && !religions.contains(currentRel)) religions.add(currentRel);
+            if (currentFin != null && !finances.contains(currentFin)) finances.add(currentFin);
+            if (currentSes != null && !sessions.contains(currentSes)) sessions.add(currentSes);
+            if (currentDist != null && !districts.contains(currentDist)) districts.add(currentDist);
         }
 
         ArrayAdapter<String> levelAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, levels);
@@ -177,16 +172,101 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void performSearch() {
-        String name = binding.searchBox.getText().toString();
-        String addr = binding.addresssearchBox.getText().toString();
-        String lvl = binding.spinnerLevel.getSelectedItem().toString();
-        String cat = binding.spinnerCategory.getSelectedItem().toString();
-        String gen = binding.spinnerGender.getSelectedItem().toString();
-        String rel = binding.spinnerReligion.getSelectedItem().toString();
-        String fin = binding.spinnerFinance.getSelectedItem().toString();
-        String ses = binding.spinnerSession.getSelectedItem().toString();
-        String dist = binding.spinnerDistrict.getSelectedItem().toString();
+        String name = binding.searchBox.getText().toString().trim();
+        String addr = binding.addresssearchBox.getText().toString().trim();
+
+        String lvl = getJoinedFilter("Level");
+        String cat = getJoinedFilter("Category");
+        String gen = getJoinedFilter("Gender");
+        String rel = getJoinedFilter("Religion");
+        String fin = getJoinedFilter("Finance");
+        String ses = getJoinedFilter("Session");
+        String dist = getJoinedFilter("District");
 
         ResultsActivity.start(this, name, addr, lvl, cat, gen, rel, fin, ses, dist);
+    }
+
+    private String getJoinedFilter(String key) {
+        List<String> list = selectedSubFilters.getOrDefault(key, new ArrayList<>());
+        return list.isEmpty() ? "" : String.join(",", list);
+    }
+
+    private void showAdvancedFilterDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_advanced_filter, null);
+
+        PopupWindow popupWindow = new PopupWindow(dialogView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, true);
+        popupWindow.setElevation(16);
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.showAtLocation(binding.getRoot(), Gravity.CENTER, 0, 0);
+
+        LinearLayout leftColumn = dialogView.findViewById(R.id.leftColumn);
+        LinearLayout rightColumn = dialogView.findViewById(R.id.rightColumn);
+        Button btnReset = dialogView.findViewById(R.id.btnReset);
+        Button btnContinue = dialogView.findViewById(R.id.btnContinue);
+        Button btnSearchNow = dialogView.findViewById(R.id.btnSearchNow);
+
+        String[] mainFilters = {"Level", "Category", "District", "Gender", "Religion", "Finance", "Session"};
+
+        for (String filter : mainFilters) {
+            Button leftButton = new Button(this);
+            leftButton.setText(filter);
+            leftButton.setOnClickListener(v -> {
+                rightColumn.removeAllViews();
+                List<String> options = getSubOptions(filter);
+                List<String> previouslySelected = selectedSubFilters.getOrDefault(filter, new ArrayList<>());
+
+                for (String option : options) {
+                    CheckBox checkBox = new CheckBox(this);
+                    checkBox.setText(option);
+                    checkBox.setChecked(previouslySelected.contains(option));
+                    checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                        List<String> list = selectedSubFilters.getOrDefault(filter, new ArrayList<>());
+                        if (isChecked) {
+                            if (!list.contains(option)) list.add(option);
+                        } else {
+                            list.remove(option);
+                        }
+                        selectedSubFilters.put(filter, list);
+                    });
+                    rightColumn.addView(checkBox);
+                }
+            });
+            leftColumn.addView(leftButton);
+        }
+
+        btnReset.setOnClickListener(v -> {
+            selectedSubFilters.clear();
+            Toast.makeText(this, "Filter reset", Toast.LENGTH_SHORT).show();
+            popupWindow.dismiss();
+        });
+
+        btnContinue.setOnClickListener(v -> popupWindow.dismiss());
+
+        btnSearchNow.setOnClickListener(v -> {
+            // Search Now 只用 Filter，強制清空 search bar
+            binding.searchBox.setText("");
+            binding.addresssearchBox.setText("");
+            popupWindow.dismiss();
+            performSearch();
+        });
+    }
+
+    private List<String> getSubOptions(String mainFilter) {
+        List<String> options = new ArrayList<>();
+        for (School s : repo.getAll()) {
+            String value = null;
+            if (mainFilter.equals("Level")) value = s.level;
+            else if (mainFilter.equals("Category")) value = s.category;
+            else if (mainFilter.equals("District")) value = s.district;
+            else if (mainFilter.equals("Gender")) value = s.gender;
+            else if (mainFilter.equals("Religion")) value = s.religion;
+            else if (mainFilter.equals("Finance")) value = s.finance;
+            else if (mainFilter.equals("Session")) value = s.session;
+
+            if (value != null && !value.isEmpty() && !options.contains(value)) {
+                options.add(value);
+            }
+        }
+        return options;
     }
 }
