@@ -14,6 +14,8 @@ public class SchoolDetailActivity extends AppCompatActivity {
     private TextView nameView, typeView, sessionView, phoneView, addressView;
     private Button btnOpenMap;
     private Button btnSchoolPage;
+    private Button btnBackToResults;
+    private Button btnBackToHome;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +29,8 @@ public class SchoolDetailActivity extends AppCompatActivity {
         addressView = findViewById(R.id.addressView);
         btnOpenMap = findViewById(R.id.btnOpenMap);
         btnSchoolPage = findViewById(R.id.btnSchoolPage);
+        btnBackToResults = findViewById(R.id.btnBackToResults);
+        btnBackToHome = findViewById(R.id.btnBackToHome);
 
         String schoolJson = getIntent().getStringExtra("schoolJson");
         School s = SchoolRepository.fromJson(schoolJson);
@@ -44,14 +48,14 @@ public class SchoolDetailActivity extends AppCompatActivity {
         typeView.setText(type);
 
         String displayses = isChinese ? s.chineseSession : s.session;
-        sessionView.setText(getString(R.string.sessiontitle) + "   " + displayses);
+        sessionView.setText(getString(R.string.sessiontitle) + " " + displayses);
 
-        phoneView.setText(getString(R.string.phonetitle) + "   "+s.phonenumber);
+        phoneView.setText(getString(R.string.phonetitle) + " " + s.phonenumber);
 
         String displayadd = isChinese ? s.chineseAddress : s.address;
-        addressView.setText(getString(R.string.addresstitle) +"  "+displayadd);
+        addressView.setText(getString(R.string.addresstitle) + " " + displayadd);
 
-
+        // Map Button
         btnOpenMap.setOnClickListener(v -> {
             Uri uri = Uri.parse("geo:" + s.latitude + "," + s.longitude + "?q=" + s.latitude + "," + s.longitude);
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -59,6 +63,7 @@ public class SchoolDetailActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // Website Button
         btnSchoolPage.setOnClickListener(v -> {
             if (s.website != null && !s.website.isEmpty()) {
                 Uri uri = Uri.parse(s.website);
@@ -68,14 +73,27 @@ public class SchoolDetailActivity extends AppCompatActivity {
                 Toast.makeText(this, "No official website available for this school", Toast.LENGTH_LONG).show();
             }
         });
+
+        // 新增的兩個按鈕
+        btnBackToResults.setOnClickListener(v -> finish());  // 返回搜尋結果頁
+
+        btnBackToHome.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+        });
     }
 
-    private String joinNonNull(String sep, String a, String b, String displaylel) {
+    private String joinNonNull(String sep, String a, String b, String c) {
         StringBuilder sb = new StringBuilder();
         if (a != null && !a.isEmpty()) sb.append(a);
         if (b != null && !b.isEmpty()) {
             if (sb.length() > 0) sb.append(sep);
             sb.append(b);
+        }
+        if (c != null && !c.isEmpty()) {
+            if (sb.length() > 0) sb.append(sep);
+            sb.append(c);
         }
         return sb.toString();
     }

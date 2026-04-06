@@ -1,23 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">學校資訊</string>
-    <string name="maintitle">我的孩子在那裏讀書？</string>
-    <string name="searchname">請輸入學校名字</string>
+    <string name="app_name">校園資訊</string>
+    <string name="maintitle">我的孩子在哪裡讀書？</string>
+
+    <string name="searchname">請輸入學校名稱</string>
     <string name="searchaddress">請輸入學校地址</string>
     <string name="searchbtn">搜尋</string>
-    <string name="refreshbtn">更新資料</string>
-    <string name="filter_all_levels">所有類型</string>
+
+    <string name="filters">篩選條件</string>
+    <string name="filter_all_levels">所有級別</string>
     <string name="filter_all_categories">所有類別</string>
-    <string name="filter_all_religions">所有宗教</string>
-    <string name="filter_all_sessions">所有授課時間</string>
-    <string name="filter_all_districts">所有分區</string>
     <string name="filter_all_genders">所有性別</string>
+    <string name="filter_all_religions">所有宗教</string>
+    <string name="filter_all_finances">所有資助類型</string>
+    <string name="filter_all_sessions">所有辦學模式</string>
+    <string name="filter_all_districts">所有地區</string>
+
+    <string name="refreshbtn">更新資料</string>
+
     <string name="resulttitle">搜尋結果：</string>
     <string name="resultall">所有學校</string>
-    <string name="sessiontitle">學校授課時間：</string>
-    <string name="phonetitle">聯絡電話：</string>
-    <string name="addresstitle">地址：</string>
-    <string name="gmapbtn">如何前往？</string>
+
+    <string name="sessiontitle">辦學模式： </string>
+    <string name="phonetitle">聯絡電話： </string>
+    <string name="addresstitle">地址： </string>
+    <string name="gmapbtn">導航前往</string>
     <string name="websitebtn">更多資訊</string>
-    <string name="filter_all_finances">所有資助種類</string>
+
+    <string name="data_loaded_from_cache">已從快取載入</string>
+    <string name="data_loaded_from_api">已從 API 載入</string>
+    <string name="refresh_success">資料已成功更新</string>
+    <string name="no_results">找不到符合的學校</string>
+    <string name="data_not_loaded">資料尚未載入，請點擊更新</string>
+    <string name="load_failed">載入失敗：%1$s</string>
 </resources>

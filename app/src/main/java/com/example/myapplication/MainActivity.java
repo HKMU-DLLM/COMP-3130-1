@@ -3,68 +3,45 @@ package com.example.myapplication;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.myapplication.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText searchBox;
-    private EditText addresssearchBox;
-    private Button btnSearch;
-    private Button btnRefresh;
-    private ProgressBar progressBar;
-    private Spinner spinnerLevel;
-    private Spinner spinnerCategory;
-    private Spinner spinnerGender;
-    private Spinner spinnerReligion;
-    private Spinner spinnerFinance;
-    private Spinner spinnerSession;
-    private Spinner spinnerDistrict;
-
+    private ActivityMainBinding binding;
     private SchoolRepository repo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        searchBox = findViewById(R.id.searchBox);
-        addresssearchBox = findViewById(R.id.addresssearchBox);
-        btnSearch = findViewById(R.id.btnSearch);
-        btnRefresh = findViewById(R.id.btnRefresh);
-        progressBar = findViewById(R.id.progressBar);
-        spinnerLevel = findViewById(R.id.spinnerLevel);
-        spinnerCategory = findViewById(R.id.spinnerCategory);
-        spinnerGender = findViewById(R.id.spinnerGender);
-        spinnerReligion = findViewById(R.id.spinnerReligion);
-        spinnerFinance = findViewById(R.id.spinnerFinance);
-        spinnerSession = findViewById(R.id.spinnerSession);
-        spinnerDistrict = findViewById(R.id.spinnerDistrict);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        setSupportActionBar(binding.toolbar);
 
         repo = SchoolRepository.getInstance(this);
 
         loadOnStartup();
 
-        btnSearch.setOnClickListener(v -> performSearch());
+        binding.btnSearch.setOnClickListener(v -> performSearch());
 
-        btnRefresh.setOnClickListener(v -> {
-            btnRefresh.setEnabled(false);
-            progressBar.setVisibility(View.VISIBLE);
+        binding.btnRefresh.setOnClickListener(v -> {
+            binding.btnRefresh.setEnabled(false);
+            binding.progressBar.setVisibility(View.VISIBLE);
 
             repo.refreshFromApi(new SchoolRepository.RefreshCallback() {
                 @Override
                 public void onSuccess() {
                     runOnUiThread(() -> {
-                        progressBar.setVisibility(View.GONE);
-                        btnRefresh.setEnabled(true);
+                        binding.progressBar.setVisibility(View.GONE);
+                        binding.btnRefresh.setEnabled(true);
                         setupFilters();
                         Toast.makeText(MainActivity.this, "Data refreshed", Toast.LENGTH_SHORT).show();
                     });
@@ -73,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(String message) {
                     runOnUiThread(() -> {
-                        progressBar.setVisibility(View.GONE);
-                        btnRefresh.setEnabled(true);
+                        binding.progressBar.setVisibility(View.GONE);
+                        binding.btnRefresh.setEnabled(true);
                         Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
                     });
                 }
@@ -83,13 +60,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadOnStartup() {
-        progressBar.setVisibility(View.VISIBLE);
+        binding.progressBar.setVisibility(View.VISIBLE);
         repo.loadCacheOrFetch(new SchoolRepository.LoadCallback() {
             @Override
             public void onLoaded(boolean fromCache) {
                 runOnUiThread(() -> {
-                    progressBar.setVisibility(View.GONE);
-                    btnRefresh.setEnabled(true);
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.btnRefresh.setEnabled(true);
                     setupFilters();
                     Toast.makeText(MainActivity.this,
                             fromCache ? "Loaded from cache" : "Loaded from API",
@@ -100,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onError(String message) {
                 runOnUiThread(() -> {
-                    progressBar.setVisibility(View.GONE);
-                    btnRefresh.setEnabled(true);
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.btnRefresh.setEnabled(true);
                     Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
                 });
             }
@@ -116,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
         List<String> finances = new ArrayList<>();
         List<String> sessions = new ArrayList<>();
         List<String> districts = new ArrayList<>();
-
 
         levels.add(getString(R.string.filter_all_levels));
         categories.add(getString(R.string.filter_all_categories));
@@ -145,7 +121,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             } else {
                 currentRel = (s.religion == null) ? "N.A." : s.religion;
-            }            String currentDist = isChinese ? s.chineseDistrict : s.district;
+            }
+            String currentDist = isChinese ? s.chineseDistrict : s.district;
 
             if (currentLevel != null && !levels.contains(currentLevel)) {
                 levels.add(currentLevel);
@@ -172,43 +149,43 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayAdapter<String> levelAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, levels);
         levelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerLevel.setAdapter(levelAdapter);
+        binding.spinnerLevel.setAdapter(levelAdapter);
 
         ArrayAdapter<String> catAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
         catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCategory.setAdapter(catAdapter);
+        binding.spinnerCategory.setAdapter(catAdapter);
 
         ArrayAdapter<String> genAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, genders);
         genAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerGender.setAdapter(genAdapter);
+        binding.spinnerGender.setAdapter(genAdapter);
 
         ArrayAdapter<String> relAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, religions);
         relAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerReligion.setAdapter(relAdapter);
+        binding.spinnerReligion.setAdapter(relAdapter);
 
         ArrayAdapter<String> finAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, finances);
         finAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerFinance.setAdapter(finAdapter);
+        binding.spinnerFinance.setAdapter(finAdapter);
 
         ArrayAdapter<String> sesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, sessions);
-        relAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerSession.setAdapter(sesAdapter);
+        sesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.spinnerSession.setAdapter(sesAdapter);
 
         ArrayAdapter<String> districtAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, districts);
         districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerDistrict.setAdapter(districtAdapter);
+        binding.spinnerDistrict.setAdapter(districtAdapter);
     }
 
     private void performSearch() {
-        String name = searchBox.getText().toString();
-        String addr = addresssearchBox.getText().toString();
-        String lvl = spinnerLevel.getSelectedItem().toString();
-        String cat = spinnerCategory.getSelectedItem().toString();
-        String gen = spinnerGender.getSelectedItem().toString();
-        String rel = spinnerReligion.getSelectedItem().toString();
-        String fin = spinnerFinance.getSelectedItem().toString();
-        String ses = spinnerSession.getSelectedItem().toString();
-        String dist = spinnerDistrict.getSelectedItem().toString();
+        String name = binding.searchBox.getText().toString();
+        String addr = binding.addresssearchBox.getText().toString();
+        String lvl = binding.spinnerLevel.getSelectedItem().toString();
+        String cat = binding.spinnerCategory.getSelectedItem().toString();
+        String gen = binding.spinnerGender.getSelectedItem().toString();
+        String rel = binding.spinnerReligion.getSelectedItem().toString();
+        String fin = binding.spinnerFinance.getSelectedItem().toString();
+        String ses = binding.spinnerSession.getSelectedItem().toString();
+        String dist = binding.spinnerDistrict.getSelectedItem().toString();
 
         ResultsActivity.start(this, name, addr, lvl, cat, gen, rel, fin, ses, dist);
     }

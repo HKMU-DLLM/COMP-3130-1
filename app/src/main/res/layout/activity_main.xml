@@ -1,133 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:fitsSystemWindows="true">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="@string/maintitle"
-        android:textSize="24sp"
-        android:textStyle="bold" />
-
-    <!-- Search Box -->
-    <LinearLayout
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:orientation="horizontal">
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorSurface"
+        app:title="@string/maintitle"
+        app:subtitle="Hong Kong Schools"
+        app:titleTextColor="?attr/colorOnSurface"
+        app:subtitleTextColor="?attr/colorOnSurfaceVariant" />
 
-        <EditText
-            android:id="@+id/searchBox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/searchname"
-            android:inputType="text" />
-
-        <EditText
-            android:id="@+id/addresssearchBox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/searchaddress"
-            android:inputType="text" />
-
-        <Button
-            android:id="@+id/btnSearch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/searchbtn" />
-    </LinearLayout>
-
-    <!-- Filters -->
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp">
-
-        <Spinner
-            android:id="@+id/spinnerLevel"
-            android:layout_width="110dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="4dp"
-            android:background="@android:drawable/btn_dropdown"
-            android:spinnerMode="dropdown" />
-
-        <Spinner
-            android:id="@+id/spinnerCategory"
-            android:layout_width="110dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="4dp"
-            android:background="@android:drawable/btn_dropdown"
-            android:spinnerMode="dropdown" />
-
-        <Spinner
-            android:id="@+id/spinnerGender"
-            android:layout_width="110dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="4dp"
-            android:background="@android:drawable/btn_dropdown"
-            android:spinnerMode="dropdown" />
-
-        <Spinner
-            android:id="@+id/spinnerReligion"
-            android:layout_width="110dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="4dp"
-            android:background="@android:drawable/btn_dropdown"
-            android:spinnerMode="dropdown" />
-
-        <Spinner
-            android:id="@+id/spinnerFinance"
-            android:layout_width="110dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="4dp"
-            android:background="@android:drawable/btn_dropdown"
-            android:spinnerMode="dropdown" />
-
-        <Spinner
-            android:id="@+id/spinnerSession"
-            android:layout_width="110dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="4dp"
-            android:background="@android:drawable/btn_dropdown"
-            android:spinnerMode="dropdown" />
-
-        <Spinner
-            android:id="@+id/spinnerDistrict"
-            android:layout_width="110dp"
-            android:layout_height="48dp"
-            android:background="@android:drawable/btn_dropdown"
-            android:spinnerMode="dropdown" />
-
-    </LinearLayout>
-
-    <!-- Buttons -->
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:padding="24dp">
 
-        <Button
-            android:id="@+id/btnRefresh"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/refreshbtn" />
+            android:orientation="vertical">
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="12dp"
-            android:visibility="gone" />
-    </LinearLayout>
+            <!-- Search Section -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                app:boxCornerRadiusTopStart="28dp"
+                app:boxCornerRadiusTopEnd="28dp"
+                app:boxCornerRadiusBottomStart="28dp"
+                app:boxCornerRadiusBottomEnd="28dp"
+                android:hint="@string/searchname">
 
-</LinearLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/searchBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                app:boxCornerRadiusTopStart="28dp"
+                app:boxCornerRadiusTopEnd="28dp"
+                app:boxCornerRadiusBottomStart="28dp"
+                app:boxCornerRadiusBottomEnd="28dp"
+                android:layout_marginTop="12dp"
+                android:hint="@string/searchaddress">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/addresssearchBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Filters Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filters"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="12dp"
+                android:textColor="?attr/colorOnSurface" />
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="3"
+                android:rowCount="3"
+                android:alignmentMode="alignMargins"
+                android:useDefaultMargins="true">
+
+                <Spinner
+                    android:id="@+id/spinnerLevel"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_columnWeight="1"
+                    android:spinnerMode="dropdown" />
+
+                <Spinner
+                    android:id="@+id/spinnerCategory"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_columnWeight="1"
+                    android:spinnerMode="dropdown" />
+
+                <Spinner
+                    android:id="@+id/spinnerDistrict"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_columnWeight="1"
+                    android:spinnerMode="dropdown" />
+
+                <Spinner
+                    android:id="@+id/spinnerGender"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_columnWeight="1"
+                    android:spinnerMode="dropdown" />
+
+                <Spinner
+                    android:id="@+id/spinnerReligion"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_columnWeight="1"
+                    android:spinnerMode="dropdown" />
+
+                <Spinner
+                    android:id="@+id/spinnerFinance"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_columnWeight="1"
+                    android:spinnerMode="dropdown" />
+
+                <Spinner
+                    android:id="@+id/spinnerSession"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_columnWeight="1"
+                    android:spinnerMode="dropdown" />
+
+            </GridLayout>
+
+            <!-- Action Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="32dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSearch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="12dp"
+                    android:text="@string/searchbtn"
+                    style="@style/Widget.Material3.Button" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRefresh"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:text="@string/refreshbtn"
+                    style="@style/Widget.Material3.Button.OutlinedButton" />
+            </LinearLayout>
+
+            <!-- ProgressBar -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="32dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

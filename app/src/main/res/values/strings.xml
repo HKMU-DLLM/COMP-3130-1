@@ -1,13 +1,15 @@
 <resources>
-    <!--Main page-->
-    <string name="app_name">school information</string>>
+    <!-- App Basic -->
+    <string name="app_name">School Information</string>
     <string name="maintitle">Where is my child studying in?</string>
+
+    <!-- Search -->
     <string name="searchname">Please input the school name</string>
     <string name="searchaddress">Please input the school address</string>
-    <string name="searchbtn">search</string>
-    <string name="refreshbtn">refresh data</string>>
+    <string name="searchbtn">Search</string>
 
-    <!--Filter-->
+    <!-- Filters -->
+    <string name="filters">Filters</string>
     <string name="filter_all_levels">All Levels</string>
     <string name="filter_all_categories">All Categories</string>
     <string name="filter_all_genders">All Genders</string>
@@ -16,14 +18,25 @@
     <string name="filter_all_sessions">All Sessions</string>
     <string name="filter_all_districts">All Districts</string>
 
-    <!--Result-->
-    <string name="resulttitle">Results for:</string>
-    <string name="resultall">All schools </string>
+    <!-- Buttons -->
+    <string name="refreshbtn">Refresh Data</string>
 
-    <!--Details page-->
+    <!-- Results -->
+    <string name="resulttitle">Results for:</string>
+    <string name="resultall">All schools</string>
+
+    <!-- Details Page -->
     <string name="sessiontitle">Session: </string>
-    <string name="phonetitle">Contact: </string>>
+    <string name="phonetitle">Contact: </string>
     <string name="addresstitle">Address: </string>
     <string name="gmapbtn">Here for navigation</string>
     <string name="websitebtn">For more information</string>
+
+    <!-- Toast & Common -->
+    <string name="data_loaded_from_cache">Loaded from cache</string>
+    <string name="data_loaded_from_api">Loaded from API</string>
+    <string name="refresh_success">Data refreshed successfully</string>
+    <string name="no_results">No results found</string>
+    <string name="data_not_loaded">Data not loaded yet. Please refresh.</string>
+    <string name="load_failed">Load failed: %1$s</string>
 </resources>

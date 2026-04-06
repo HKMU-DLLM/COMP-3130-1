@@ -1,47 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@android:color/white"
     android:padding="16dp">
 
+    <!-- School Name -->
     <TextView
         android:id="@+id/nameView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_marginBottom="12dp"/>
+        android:layout_marginBottom="16dp"/>
 
+    <!-- Type / Category -->
     <TextView
         android:id="@+id/typeView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="12dp"/>
 
+    <!-- Session -->
     <TextView
         android:id="@+id/sessionView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="20dp"/>
 
+    <!-- Phone -->
     <TextView
         android:id="@+id/phoneView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:text="@string/gmapbtn"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="12dp"/>
 
+    <!-- Address -->
     <TextView
         android:id="@+id/addressView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="32dp"/>
 
+    <!-- Map and Website Buttons -->
     <Button
         android:id="@+id/btnOpenMap"
         android:layout_width="match_parent"
@@ -54,6 +61,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/websitebtn"
-        android:backgroundTint="#2196F3"/>
+        android:backgroundTint="#2196F3"
+        android:layout_marginBottom="32dp"/>
+
+    <!-- Bottom Navigation Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="24dp"
+        android:paddingTop="16dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBackToResults"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Back to Results" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBackToHome"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="Back to Home" />
+
+    </LinearLayout>
 
 </LinearLayout>
