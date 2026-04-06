@@ -23,6 +23,10 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private Spinner spinnerLevel;
     private Spinner spinnerCategory;
+    private Spinner spinnerGender;
+    private Spinner spinnerReligion;
+    private Spinner spinnerFinance;
+    private Spinner spinnerSession;
     private Spinner spinnerDistrict;
 
     private SchoolRepository repo;
@@ -39,9 +43,13 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         spinnerLevel = findViewById(R.id.spinnerLevel);
         spinnerCategory = findViewById(R.id.spinnerCategory);
+        spinnerGender = findViewById(R.id.spinnerGender);
+        spinnerReligion = findViewById(R.id.spinnerReligion);
+        spinnerFinance = findViewById(R.id.spinnerFinance);
+        spinnerSession = findViewById(R.id.spinnerSession);
         spinnerDistrict = findViewById(R.id.spinnerDistrict);
 
-        repo = new SchoolRepository(this);
+        repo = SchoolRepository.getInstance(this);
 
         loadOnStartup();
 
@@ -103,21 +111,63 @@ public class MainActivity extends AppCompatActivity {
     private void setupFilters() {
         List<String> levels = new ArrayList<>();
         List<String> categories = new ArrayList<>();
+        List<String> genders = new ArrayList<>();
+        List<String> religions = new ArrayList<>();
+        List<String> finances = new ArrayList<>();
+        List<String> sessions = new ArrayList<>();
         List<String> districts = new ArrayList<>();
 
-        levels.add("All Levels");
-        categories.add("All Categories");
-        districts.add("All Districts");
+
+        levels.add(getString(R.string.filter_all_levels));
+        categories.add(getString(R.string.filter_all_categories));
+        genders.add(getString(R.string.filter_all_genders));
+        religions.add(getString(R.string.filter_all_religions));
+        finances.add(getString(R.string.filter_all_finances));
+        sessions.add(getString(R.string.filter_all_sessions));
+        districts.add(getString(R.string.filter_all_districts));
+
+        boolean isChinese = getResources().getConfiguration().getLocales().get(0)
+                .getLanguage().equals("zh");
 
         for (School s : repo.getAll()) {
-            if (s.level != null && !levels.contains(s.level)) levels.add(s.level);
-            if (s.chineseLevel != null && !levels.contains(s.chineseLevel)) levels.add(s.chineseLevel);
+            String currentLevel = isChinese ? s.chineseLevel : s.level;
+            String currentCat = isChinese ? s.chineseCategory : s.category;
+            String currentGen = isChinese ? s.chineseGender : s.gender;
+            String currentFin = isChinese ? s.chineseFinance : s.finance;
+            String currentSes = isChinese ? s.chineseSession : s.session;
 
-            if (s.category != null && !categories.contains(s.category)) categories.add(s.category);
-            if (s.chineseCategory != null && !categories.contains(s.chineseCategory)) categories.add(s.chineseCategory);
+            String currentRel;
+            if (isChinese) {
+                if (s.chineseReligion == null || s.chineseReligion.equalsIgnoreCase("N.A.")) {
+                    currentRel = "不適用";
+                } else {
+                    currentRel = s.chineseReligion;
+                }
+            } else {
+                currentRel = (s.religion == null) ? "N.A." : s.religion;
+            }            String currentDist = isChinese ? s.chineseDistrict : s.district;
 
-            if (s.district != null && !districts.contains(s.district)) districts.add(s.district);
-            if (s.chineseDistrict != null && !districts.contains(s.chineseDistrict)) districts.add(s.chineseDistrict);
+            if (currentLevel != null && !levels.contains(currentLevel)) {
+                levels.add(currentLevel);
+            }
+            if (currentCat != null && !categories.contains(currentCat)) {
+                categories.add(currentCat);
+            }
+            if (currentGen != null && !genders.contains(currentGen)) {
+                genders.add(currentGen);
+            }
+            if (currentRel != null && !religions.contains(currentRel)) {
+                religions.add(currentRel);
+            }
+            if (currentFin != null && !finances.contains(currentFin)) {
+                finances.add(currentFin);
+            }
+            if (currentSes != null && !sessions.contains(currentSes)) {
+                sessions.add(currentSes);
+            }
+            if (currentDist != null && !districts.contains(currentDist)) {
+                districts.add(currentDist);
+            }
         }
 
         ArrayAdapter<String> levelAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, levels);
@@ -128,38 +178,38 @@ public class MainActivity extends AppCompatActivity {
         catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategory.setAdapter(catAdapter);
 
+        ArrayAdapter<String> genAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, genders);
+        genAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerGender.setAdapter(genAdapter);
+
+        ArrayAdapter<String> relAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, religions);
+        relAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerReligion.setAdapter(relAdapter);
+
+        ArrayAdapter<String> finAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, finances);
+        finAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerFinance.setAdapter(finAdapter);
+
+        ArrayAdapter<String> sesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, sessions);
+        relAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerSession.setAdapter(sesAdapter);
+
         ArrayAdapter<String> districtAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, districts);
         districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDistrict.setAdapter(districtAdapter);
     }
 
     private void performSearch() {
-        if (!repo.isLoaded()) {
-            Toast.makeText(this, "Data not loaded yet.", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        String name = searchBox.getText().toString();
+        String addr = addresssearchBox.getText().toString();
+        String lvl = spinnerLevel.getSelectedItem().toString();
+        String cat = spinnerCategory.getSelectedItem().toString();
+        String gen = spinnerGender.getSelectedItem().toString();
+        String rel = spinnerReligion.getSelectedItem().toString();
+        String fin = spinnerFinance.getSelectedItem().toString();
+        String ses = spinnerSession.getSelectedItem().toString();
+        String dist = spinnerDistrict.getSelectedItem().toString();
 
-        String queryName = searchBox.getText().toString().trim();
-        String queryAddress = addresssearchBox.getText().toString().trim();
-
-        String levelFilter = spinnerLevel.getSelectedItem().toString();
-        String categoryFilter = spinnerCategory.getSelectedItem().toString();
-        String districtFilter = spinnerDistrict.getSelectedItem().toString();
-
-        List<School> results = repo.searchWithFilters(queryName, queryAddress,
-                levelFilter, categoryFilter, districtFilter);
-
-        if (results.isEmpty()) {
-            Toast.makeText(this, "No results found with current filters.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // For display on the results page
-        String displayQuery = "";
-        if (!queryName.isEmpty()) displayQuery = queryName;
-        else if (!queryAddress.isEmpty()) displayQuery = queryAddress;
-        else displayQuery = "All Schools";
-
-        ResultsActivity.start(this, displayQuery, results);
+        ResultsActivity.start(this, name, addr, lvl, cat, gen, rel, fin, ses, dist);
     }
 }

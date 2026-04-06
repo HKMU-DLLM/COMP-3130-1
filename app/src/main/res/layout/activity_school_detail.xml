@@ -21,31 +21,39 @@
         android:layout_marginBottom="8dp"/>
 
     <TextView
-        android:id="@+id/addressView"
+        android:id="@+id/sessionView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:layout_marginBottom="16dp"/>
 
     <TextView
-        android:id="@+id/coordView"
+        android:id="@+id/phoneView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:layout_marginBottom="24dp"/>
+        android:text="@string/gmapbtn"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/addressView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp"/>
 
     <Button
         android:id="@+id/btnOpenMap"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Open in Google Maps"
+        android:text="@string/gmapbtn"
         android:layout_marginBottom="12dp"/>
 
     <Button
         android:id="@+id/btnSchoolPage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Go to School Website"
+        android:text="@string/websitebtn"
         android:backgroundTint="#2196F3"/>
 
 </LinearLayout>

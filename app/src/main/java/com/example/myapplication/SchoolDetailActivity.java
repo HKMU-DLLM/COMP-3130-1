@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SchoolDetailActivity extends AppCompatActivity {
 
-    private TextView nameView, typeView, addressView, coordView;
+    private TextView nameView, typeView, sessionView, phoneView, addressView;
     private Button btnOpenMap;
     private Button btnSchoolPage;
 
@@ -22,40 +22,38 @@ public class SchoolDetailActivity extends AppCompatActivity {
 
         nameView = findViewById(R.id.nameView);
         typeView = findViewById(R.id.typeView);
+        sessionView = findViewById(R.id.sessionView);
+        phoneView = findViewById(R.id.phoneView);
         addressView = findViewById(R.id.addressView);
-        coordView = findViewById(R.id.coordView);
         btnOpenMap = findViewById(R.id.btnOpenMap);
         btnSchoolPage = findViewById(R.id.btnSchoolPage);
 
         String schoolJson = getIntent().getStringExtra("schoolJson");
         School s = SchoolRepository.fromJson(schoolJson);
 
-        if (s == null) {
-            Toast.makeText(this, "School data error", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
+        boolean isChinese = getResources().getConfiguration().getLocales().get(0)
+                .getLanguage().equals("zh");
 
-        nameView.setText(s.name != null ? s.name : "(Unknown School)");
+        String displayname = isChinese ? s.chineseName : s.name;
+        nameView.setText(displayname);
 
-        String type = joinNonNull(" • ", s.category, s.level);
-        typeView.setText(type.isEmpty() ? "No type information" : type);
+        String displayfin = isChinese ? s.chineseFinance : s.finance;
+        String displaycat = isChinese ? s.chineseCategory : s.category;
+        String displaylel = isChinese ? s.chineseLevel : s.level;
+        String type = joinNonNull(" • ", displayfin, displaycat, displaylel);
+        typeView.setText(type);
 
-        addressView.setText(s.address != null && !s.address.isEmpty() ? s.address : "(No address available)");
+        String displayses = isChinese ? s.chineseSession : s.session;
+        sessionView.setText(getString(R.string.sessiontitle) + "   " + displayses);
 
-        if (s.latitude != null && s.longitude != null) {
-            coordView.setText("Latitude: " + s.latitude + "\nLongitude: " + s.longitude);
-        } else {
-            coordView.setText("Coordinates not available");
-        }
+        phoneView.setText(getString(R.string.phonetitle) + "   "+s.phonenumber);
+
+        String displayadd = isChinese ? s.chineseAddress : s.address;
+        addressView.setText(getString(R.string.addresstitle) +"  "+displayadd);
+
 
         btnOpenMap.setOnClickListener(v -> {
-            if (s.latitude == null || s.longitude == null) {
-                Toast.makeText(this, "No coordinates available", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            Uri uri = Uri.parse("https://www.google.com/maps?q=" + s.latitude + "," + s.longitude);
+            Uri uri = Uri.parse("geo:" + s.latitude + "," + s.longitude + "?q=" + s.latitude + "," + s.longitude);
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             intent.setPackage("com.google.android.apps.maps");
             startActivity(intent);
@@ -72,7 +70,7 @@ public class SchoolDetailActivity extends AppCompatActivity {
         });
     }
 
-    private String joinNonNull(String sep, String a, String b) {
+    private String joinNonNull(String sep, String a, String b, String displaylel) {
         StringBuilder sb = new StringBuilder();
         if (a != null && !a.isEmpty()) sb.append(a);
         if (b != null && !b.isEmpty()) {

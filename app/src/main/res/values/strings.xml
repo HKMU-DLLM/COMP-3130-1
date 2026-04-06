@@ -1,5 +1,29 @@
 <resources>
-    <string name="app_name">My Application</string>
-    <string name="splash_title">School Info</string>
-    <string name="splash_enter">Enter</string>
+    <!--Main page-->
+    <string name="app_name">school information</string>>
+    <string name="maintitle">Where is my child studying in?</string>
+    <string name="searchname">Please input the school name</string>
+    <string name="searchaddress">Please input the school address</string>
+    <string name="searchbtn">search</string>
+    <string name="refreshbtn">refresh data</string>>
+
+    <!--Filter-->
+    <string name="filter_all_levels">All Levels</string>
+    <string name="filter_all_categories">All Categories</string>
+    <string name="filter_all_genders">All Genders</string>
+    <string name="filter_all_religions">All Religions</string>
+    <string name="filter_all_finances">All Finances</string>
+    <string name="filter_all_sessions">All Sessions</string>
+    <string name="filter_all_districts">All Districts</string>
+
+    <!--Result-->
+    <string name="resulttitle">Results for:</string>
+    <string name="resultall">All schools </string>
+
+    <!--Details page-->
+    <string name="sessiontitle">Session: </string>
+    <string name="phonetitle">Contact: </string>>
+    <string name="addresstitle">Address: </string>
+    <string name="gmapbtn">Here for navigation</string>
+    <string name="websitebtn">For more information</string>
 </resources>

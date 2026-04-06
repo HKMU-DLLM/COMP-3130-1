@@ -20,21 +20,20 @@ public class ResultsActivity extends AppCompatActivity {
     private ListView listView;
     private TextView titleView;
 
-    public static void start(Context context, String query, List<School> results) {
-        if (results == null || results.isEmpty()) {
-            Toast.makeText(context, "No results found.", Toast.LENGTH_SHORT).show();
-            return;
-        }
+    public static void start(Context context, String name, String addr, String level,
+                             String cat, String gen, String rel, String fin,
+                             String ses, String dist) {
 
         Intent i = new Intent(context, ResultsActivity.class);
-
-        String safeQuery = (query == null || query.trim().isEmpty()) ? "All Schools" : query.trim();
-
-        String resultsJson = new Gson().toJson(new ResultsWrapper(results));
-
-        i.putExtra("query", safeQuery);
-        i.putExtra("resultsJson", resultsJson);
-
+        i.putExtra("qName", name);
+        i.putExtra("qAddr", addr);
+        i.putExtra("qLvl", level);
+        i.putExtra("qCat", cat);
+        i.putExtra("qGen", gen);
+        i.putExtra("qRel", rel);
+        i.putExtra("qFin", fin);
+        i.putExtra("qSes", ses);
+        i.putExtra("qDist", dist);
         context.startActivity(i);
     }
 
@@ -53,23 +52,21 @@ public class ResultsActivity extends AppCompatActivity {
         listView = findViewById(R.id.listView);
         titleView = findViewById(R.id.titleView);
 
-        String query = getIntent().getStringExtra("query");
-        String resultsJson = getIntent().getStringExtra("resultsJson");
+        String qName = getIntent().getStringExtra("qName");
+        String qAddr = getIntent().getStringExtra("qAddr");
+        String qLvl = getIntent().getStringExtra("qLvl");
+        String qCat = getIntent().getStringExtra("qCat");
+        String qGen = getIntent().getStringExtra("qGen");
+        String qRel = getIntent().getStringExtra("qRel");
+        String qFin = getIntent().getStringExtra("qFin");
+        String qSes = getIntent().getStringExtra("qSes");
+        String qDist = getIntent().getStringExtra("qDist");
 
-        titleView.setText("Results for: " + (query != null ? query : "All Schools"));
+        String displayQuery = (qName != null && !qName.isEmpty()) ? qName : getString(R.string.resultall);
+        titleView.setText(getString(R.string.resulttitle) + displayQuery);
 
-        // 解析結果
-        List<School> results = new ArrayList<>();
-        try {
-            ResultsWrapper wrapper = new Gson().fromJson(resultsJson, ResultsWrapper.class);
-            if (wrapper != null && wrapper.results != null) {
-                results = wrapper.results;
-            }
-        } catch (Exception e) {
-            Toast.makeText(this, "Error loading results data", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
+        SchoolRepository repo = SchoolRepository.getInstance(this);
+        List<School> results = repo.searchWithFilters(qName, qAddr, qLvl, qCat, qGen, qRel, qFin, qSes, qDist);
 
         if (results.isEmpty()) {
             Toast.makeText(this, "No schools found.", Toast.LENGTH_SHORT).show();
@@ -77,29 +74,22 @@ public class ResultsActivity extends AppCompatActivity {
             return;
         }
 
-        // 建立顯示列表
+        boolean isZh = getResources().getConfiguration().getLocales().get(0).getLanguage().equals("zh");
         List<String> displayList = new ArrayList<>();
+
         for (School s : results) {
-            String address = (s.address != null && !s.address.isEmpty()) ? " - " + s.address : "";
-            displayList.add((s.name != null ? s.name : "Unknown School") + address);
+            String name = isZh ? s.chineseName : s.name;
+            String addr = isZh ? s.chineseAddress : s.address;
+            String suffix = (addr != null && !addr.isEmpty() && !addr.equalsIgnoreCase("N.A.")) ? " - " + addr : "";
+            displayList.add(name + suffix);
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, displayList);
-        listView.setAdapter(adapter);
-
-        // 點擊進入詳細頁面 - 修正 lambda 變數問題
-        final List<School> finalResults = results;   // ← 關鍵修正：改成 effectively final
+        listView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayList));
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            if (position < 0 || position >= finalResults.size()) return;
-
-            School selected = finalResults.get(position);
-            if (selected == null) return;
-
-            String schoolJson = SchoolRepository.toJson(selected);
+            School selected = results.get(position);
             Intent intent = new Intent(this, SchoolDetailActivity.class);
-            intent.putExtra("schoolJson", schoolJson);
+            intent.putExtra("schoolJson", SchoolRepository.toJson(selected));
             startActivity(intent);
         });
     }

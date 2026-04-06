@@ -8,69 +8,104 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="School Info"
+        android:layout_marginBottom="16dp"
+        android:text="@string/maintitle"
         android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp"/>
+        android:textStyle="bold" />
 
     <!-- Search Box -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="12dp">
+        android:layout_marginBottom="12dp"
+        android:orientation="horizontal">
 
         <EditText
             android:id="@+id/searchBox"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:hint="Enter school name"
+            android:layout_weight="1"
+            android:hint="@string/searchname"
             android:inputType="text" />
 
         <EditText
             android:id="@+id/addresssearchBox"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:hint="Enter school address"
+            android:layout_weight="1"
+            android:hint="@string/searchaddress"
             android:inputType="text" />
 
         <Button
             android:id="@+id/btnSearch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Search" />
+            android:text="@string/searchbtn" />
     </LinearLayout>
 
     <!-- Filters -->
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingBottom="12dp">
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
 
         <Spinner
             android:id="@+id/spinnerLevel"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp" />
+            android:layout_width="110dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="4dp"
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown" />
 
         <Spinner
             android:id="@+id/spinnerCategory"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_width="110dp"
+            android:layout_height="48dp"
             android:layout_marginEnd="4dp"
-            android:layout_marginStart="4dp" />
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown" />
+
+        <Spinner
+            android:id="@+id/spinnerGender"
+            android:layout_width="110dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="4dp"
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown" />
+
+        <Spinner
+            android:id="@+id/spinnerReligion"
+            android:layout_width="110dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="4dp"
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown" />
+
+        <Spinner
+            android:id="@+id/spinnerFinance"
+            android:layout_width="110dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="4dp"
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown" />
+
+        <Spinner
+            android:id="@+id/spinnerSession"
+            android:layout_width="110dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="4dp"
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown" />
 
         <Spinner
             android:id="@+id/spinnerDistrict"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp" />
+            android:layout_width="110dp"
+            android:layout_height="48dp"
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown" />
+
     </LinearLayout>
 
     <!-- Buttons -->
@@ -82,17 +117,17 @@
         <Button
             android:id="@+id/btnRefresh"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Refresh Data" />
+            android:layout_weight="1"
+            android:text="@string/refreshbtn" />
 
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="12dp"/>
+            android:layout_marginStart="12dp"
+            android:visibility="gone" />
     </LinearLayout>
 
 </LinearLayout>

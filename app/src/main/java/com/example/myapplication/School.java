@@ -20,22 +20,8 @@ public class School {
     public Double longitude;
     public String district;
     public String chineseDistrict;
-
-    public String getDisplayName() {
-        return (name != null && !name.trim().isEmpty()) ? name : chineseName;
-    }
-
-    public String getDisplayAddress() {
-        return (address != null && !address.trim().isEmpty()) ? address : chineseAddress;
-    }
-
-    public String getDisplayType() {
-        String type = "";
-        if (category != null && !category.trim().isEmpty()) type += category;
-        if (level != null && !level.trim().isEmpty()) {
-            if (!type.isEmpty()) type += " • ";
-            type += level;
-        }
-        return type.isEmpty() ? "No type information" : type;
-    }
+    public String session;
+    public String chineseSession;
+    public String finance;
+    public String chineseFinance;
 }

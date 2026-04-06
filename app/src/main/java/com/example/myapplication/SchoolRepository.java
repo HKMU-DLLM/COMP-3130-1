@@ -42,10 +42,16 @@ public class SchoolRepository {
         void onFailure(String message);
     }
 
-    public SchoolRepository(Context context) {
+    private static SchoolRepository instance;
+    public static synchronized SchoolRepository getInstance(Context context) {
+        if (instance == null) {
+            instance = new SchoolRepository(context);
+        }
+        return instance;
+    }
+    private SchoolRepository(Context context) {
         this.context = context.getApplicationContext();
     }
-
     public boolean isLoaded() {
         return loaded;
     }
@@ -116,6 +122,10 @@ public class SchoolRepository {
                                           String queryAddress,
                                           String levelFilter,
                                           String categoryFilter,
+                                          String genderFilter,
+                                          String religionFilter,
+                                          String financeFilter,
+                                          String sessionFilter,
                                           String districtFilter) {
 
         String qName = (queryName == null ? "" : queryName.trim().toLowerCase(Locale.ROOT))
@@ -123,9 +133,21 @@ public class SchoolRepository {
         String qAddr = (queryAddress == null ? "" : queryAddress.trim().toLowerCase(Locale.ROOT))
                 .replace("　", " ");
 
-        boolean allLevels = "All Levels".equals(levelFilter);
-        boolean allCategories = "All Categories".equals(categoryFilter);
-        boolean allDistricts = "All Districts".equals(districtFilter);
+        String allLvl = context.getString(R.string.filter_all_levels);
+        String allCat = context.getString(R.string.filter_all_categories);
+        String allGen = context.getString(R.string.filter_all_genders);
+        String allRel = context.getString(R.string.filter_all_religions);
+        String allFin = context.getString(R.string.filter_all_finances);
+        String allSes = context.getString(R.string.filter_all_sessions);
+        String allDis = context.getString(R.string.filter_all_districts);
+
+        boolean allLevels = allLvl.equals(levelFilter) || "All Levels".equals(levelFilter);
+        boolean allCategories = allCat.equals(categoryFilter) || "All Categories".equals(categoryFilter);
+        boolean allGenders = allGen.equals(genderFilter) || "All Genders".equals(genderFilter);
+        boolean allReligions = allRel.equals(religionFilter) || "All Religions".equals(religionFilter);
+        boolean allFinances = allFin.equals(financeFilter) || "All Finances".equals(financeFilter);
+        boolean allSessions = allSes.equals(sessionFilter) || "All Sessions".equals(sessionFilter);
+        boolean allDistricts = allDis.equals(districtFilter) || "All Districts".equals(districtFilter);
 
         List<School> out = new ArrayList<>();
 
@@ -137,7 +159,6 @@ public class SchoolRepository {
                                 containsIgnoreCase(s.name, qName) ||
                                 containsIgnoreCase(s.chineseName, qName);
 
-                // NEW: address matching (English + Chinese)
                 boolean matchAddress =
                         qAddr.isEmpty() ||
                                 containsIgnoreCase(s.address, qAddr) ||
@@ -153,12 +174,32 @@ public class SchoolRepository {
                                 equalsIgnoreCase(s.category, categoryFilter) ||
                                 equalsIgnoreCase(s.chineseCategory, categoryFilter);
 
+                boolean matchGender =
+                        allGenders ||
+                                equalsIgnoreCase(s.gender, genderFilter) ||
+                                equalsIgnoreCase(s.chineseGender, genderFilter);
+
+                boolean matchReligion =
+                        allReligions ||
+                                equalsIgnoreCase(s.religion, religionFilter) ||
+                                equalsIgnoreCase(s.chineseReligion, religionFilter);
+
+                boolean matchFinance =
+                        allFinances ||
+                                equalsIgnoreCase(s.finance, financeFilter) ||
+                                equalsIgnoreCase(s.chineseFinance, financeFilter);
+
+                boolean matchSession =
+                        allSessions ||
+                                equalsIgnoreCase(s.session, sessionFilter) ||
+                                equalsIgnoreCase(s.chineseSession, sessionFilter);
+
                 boolean matchDistrict =
                         allDistricts ||
                                 equalsIgnoreCase(s.district, districtFilter) ||
                                 equalsIgnoreCase(s.chineseDistrict, districtFilter);
 
-                if (matchName && matchAddress && matchLevel && matchCategory && matchDistrict) {
+                if (matchName && matchAddress && matchLevel && matchCategory && matchGender && matchReligion && matchFinance && matchSession && matchDistrict) {
                     out.add(s);
                 }
             }
@@ -171,9 +212,9 @@ public class SchoolRepository {
         return text.toLowerCase(Locale.ROOT).contains(keyword);
     }
 
-    private boolean equalsIgnoreCase(String a, String b) {
-        if (a == null || b == null) return false;
-        return a.equals(b);
+    private boolean equalsIgnoreCase(String schoolValue, String filterValue) {
+        if (schoolValue == null || filterValue == null) return false;
+        return schoolValue.trim().equalsIgnoreCase(filterValue.trim());
     }
 
     private List<School> parseSchools(String json) {
@@ -192,26 +233,41 @@ public class SchoolRepository {
                 School s = new School();
 
                 s.schoolId = getString(o, "SCHOOL NO.");
+
                 s.name = getString(o, "ENGLISH NAME");
                 s.chineseName = getString(o, "中文名稱");
+
                 s.category = getString(o, "ENGLISH CATEGORY");
                 s.chineseCategory = getString(o, "中文類別");
+
                 s.level = getString(o, "SCHOOL LEVEL");
-                if (s.level == null) s.level = getString(o, "學校類型");
                 s.chineseLevel = getString(o, "學校類型");
+
                 s.address = getString(o, "ENGLISH ADDRESS");
                 s.chineseAddress = getString(o, "中文地址");
-                s.gender = getString(o, "GENDER");
-                s.chineseGender = getString(o, "中文性別");
-                s.phonenumber = getString(o, "PHONE NUMBER");
+
+                s.gender = getString(o, "STUDENTS GENDER");
+                s.chineseGender = getString(o, "就讀學生性別");
+
+                s.phonenumber = getString(o, "TELEPHONE");
+
                 s.website = getString(o, "WEBSITE");
+
                 s.religion = getString(o, "RELIGION");
-                s.chineseReligion = getString(o, "中文宗教");
+                s.chineseReligion = getString(o, "宗教");
+
                 s.district = getString(o, "DISTRICT");
-                s.chineseDistrict = getString(o, "中文分區");
+                s.chineseDistrict = getString(o, "分區");
+
+                s.session = getString(o, "SESSION");
+                s.chineseSession = getString(o, "學校授課時間");
+
+                s.finance = getString(o,"FINANCE TYPE");
+                s.chineseFinance = getString(o, "資助種類");
 
                 s.latitude = getDoubleNullable(o, "LATITUDE");
                 if (s.latitude == null) s.latitude = getDoubleNullable(o, "緯度");
+
                 s.longitude = getDoubleNullable(o, "LONGITUDE");
                 if (s.longitude == null) s.longitude = getDoubleNullable(o, "經度");
 
